@@ -3,13 +3,13 @@
 <ConnectionStatus>901</ConnectionStatus>
 <WifiConnectionStatus>902</WifiConnectionStatus>
 <SignalStrength></SignalStrength>
-<SignalIcon>5</SignalIcon>
+<SignalIcon>4</SignalIcon>
 <CurrentNetworkType>19</CurrentNetworkType>
 <CurrentServiceDomain>3</CurrentServiceDomain>
 <RoamingStatus>0</RoamingStatus>
-<BatteryStatus>0</BatteryStatus>
+<BatteryStatus>1</BatteryStatus>
 <BatteryLevel>3</BatteryLevel>
-<BatteryPercent>72</BatteryPercent>
+<BatteryPercent>56</BatteryPercent>
 <BatteryIndicator>0</BatteryIndicator>
 <simlockStatus>0</simlockStatus>
 <PrimaryDns>221.5.88.88</PrimaryDns>
@@ -30,7 +30,7 @@
 <WanPolicy>0</WanPolicy>
 <cellroam>1</cellroam>
 <classify>mobile-wifi</classify>
-<usbup>0</usbup>
+<usbup>1</usbup>
 <wifiswitchstatus>1</wifiswitchstatus>
 <WifiStatusExCustom>0</WifiStatusExCustom>
 <hvdcp_online>0</hvdcp_online>

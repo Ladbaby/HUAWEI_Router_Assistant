@@ -69,3 +69,11 @@ class LinkCardView(SingleDirectionScrollArea):
         """ add link card """
         card = LinkCard(icon, title, content, url, self.view)
         self.hBoxLayout.addWidget(card, 0, Qt.AlignLeft)
+
+    def update_card_at(self, index, icon, title, content, url):
+        """ update card at index """
+        card = self.hBoxLayout.itemAt(index).widget()
+        card.iconWidget.setIcon(icon)
+        card.titleLabel.setText(title)
+        card.contentLabel.setText(TextWrap.wrap(content, 28, False)[0])
+        card.url = QUrl(url)

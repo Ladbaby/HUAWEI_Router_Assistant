@@ -59,6 +59,9 @@ class MainWindow(FluentWindow):
 
         self.initWindow()
 
+    def update_monitoring_status(self):
+        self.homeInterface.update_monitoring_status()
+
     def initLayout(self):
         signalBus.switchToSampleCard.connect(self.switchToSample)
         signalBus.supportSignal.connect(self.onSupport)

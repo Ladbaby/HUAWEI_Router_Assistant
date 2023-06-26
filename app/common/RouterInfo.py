@@ -87,11 +87,11 @@ class Router_HW:
             print("Request 'get_status' failed with status code:", response_status.status_code)
 
     def get_battery_percent(self):
-        self.get_status()
+        # self.get_status()
         return self.BatteryPercent
 
     def get_battery_status(self):
-        self.get_status()
+        # self.get_status()
         return self.BatteryStatusStr
 
     def get_battery_icon_path(self):
@@ -104,6 +104,9 @@ class Router_HW:
             return 'app/resource/images/icons/battery_30_to_50.ico'
         elif battery_percent <= 30:
             return 'app/resource/images/icons/battery_below_30.ico'
+
+    def update_monitoring_status(self):
+        self.get_status()
         
 
 

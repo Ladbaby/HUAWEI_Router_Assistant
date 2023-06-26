@@ -32,6 +32,7 @@ class BannerWidget(QWidget):
         self.vBoxLayout.addWidget(self.linkCardView, 1, Qt.AlignBottom)
         self.vBoxLayout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
+        # No.0
         self.linkCardView.addCard(
             ':/gallery/images/logo.png',
             self.tr('Battery Information'),
@@ -60,6 +61,15 @@ class BannerWidget(QWidget):
             self.tr('Send feedback'),
             self.tr('Help us improve PyQt-Fluent-Widgets by providing feedback.'),
             FEEDBACK_URL
+        )
+
+    def update_monitoring_status(self):
+        self.linkCardView.update_card_at(
+            0, 
+            ':/gallery/images/logo.png',
+            self.tr('Battery Information'),
+            self.tr(str(self.router.get_battery_percent()) + '%\n' + self.router.get_battery_status()),
+            HELP_URL
         )
 
     def paintEvent(self, e):
@@ -103,6 +113,9 @@ class HomeInterface(ScrollArea):
 
         self.__initWidget()
         self.loadSamples()
+
+    def update_monitoring_status(self):
+        self.banner.update_monitoring_status()
 
     def __initWidget(self):
         self.view.setObjectName('view')
