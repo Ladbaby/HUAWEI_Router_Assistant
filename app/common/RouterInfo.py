@@ -2,6 +2,9 @@ import requests
 import xml.etree.ElementTree as ET
 import hashlib
 import base64
+import os
+
+os.environ['NO_PROXY'] = '192.168.8.1'
 
 from notifypy import Notify
 

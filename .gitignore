@@ -1,2 +1,5 @@
 __pycache__
 app/resource/images/*
+main.spec
+dist/*
+build/*

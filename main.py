@@ -45,17 +45,22 @@ if __name__ == "__main__":
     icon = QIcon(router.get_battery_icon_path())
     
     w = MainWindow(router)
+
+    def show_window():
+        w.show()
+        update()
+
     # Adding item on the menu bar
     tray = QSystemTrayIcon()
     tray.setIcon(icon)
     tray.setVisible(True)
-    tray.activated.connect(lambda: w.show())
+    tray.activated.connect(show_window)
 
 
     # Creating the options
     menu = QMenu()
     open_action = QAction("Open")
-    open_action.triggered.connect(lambda: w.show())
+    open_action.triggered.connect(show_window)
     menu.addAction(open_action)
     
     # To quit the app
