@@ -4,7 +4,6 @@ import hashlib
 import base64
 import os
 
-os.environ['NO_PROXY'] = '192.168.8.1'
 
 from notifypy import Notify
 
@@ -15,6 +14,7 @@ class Router_HW:
         login_admin_password = "iamlocked",
         router_ip = "192.168.8.1"
     ) -> None:
+        os.environ['NO_PROXY'] = router_ip
         self.session_url = 'http://' + router_ip + '/api/webserver/SesTokInfo'
         self.status_url = 'http://' + router_ip + '/api/monitoring/status'
         self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.51'}
@@ -31,6 +31,8 @@ class Router_HW:
         self.if_already_notify = False
         self.previous_battery_status = ""
 
+        self.monitoring_status_dic = {}
+
     def get_session_token(self):
         response_session = requests.get(self.session_url, headers=self.headers, timeout=60, verify=False)
 
@@ -40,11 +42,9 @@ class Router_HW:
 
             # Retrieve the content within <TokInfo> tag
             self.TokInfo = root.find('TokInfo').text
-            # print('login_server_cookie:', login_server_cookie)
 
             # Retrieve the content within <SesInfo> tag
             self.SesInfo = root.find('SesInfo').text
-            # print('login_server_token:', login_server_token)
             self.cookies['SessionID'] = self.SesInfo
 
             admin_user_password_token = self.LOGIN_ADMIN_USER + self.LOGIN_ADMIN_PASSWORD_BASE64 + self.SesInfo
@@ -64,9 +64,22 @@ class Router_HW:
             # for key in root.iter():
             #     print(key.tag, key.text)
             self.BatteryStatus = root.find('BatteryStatus').text
-            self.BatteryStatusStr = "充电中" if self.BatteryStatus == "1" else "放电中"
+            self.BatteryStatusStr = "Charging" if self.BatteryStatus == "1" else "Not Charging"
             self.BatteryPercent = int(root.find('BatteryPercent').text)
 
+            sim_lock_status = int(root.find('simlockStatus').text)
+            wifi_connection_status = int(root.find('WifiConnectionStatus').text)
+
+            self.current_wifi_user = int(root.find('CurrentWifiUser').text)
+
+            connection_status = int(root.find('ConnectionStatus').text)
+
+            self.signal_strength = int(root.find('SignalIcon').text)
+            self.max_signal_strength = int(root.find('maxsignal').text)
+
+            current_network_type = int(root.find('CurrentNetworkType').text)
+
+            # process battery status
             if self.previous_battery_status != self.BatteryStatus:
                 self.if_already_notify = False
                 self.previous_battery_status = self.BatteryStatus
@@ -74,17 +87,82 @@ class Router_HW:
             if self.BatteryPercent > 80 and self.BatteryStatus == "1" and not self.if_already_notify:
                 self.if_already_notify = True 
                 notification = Notify()
-                notification.title = "华为随行WiFi 3 Pro充电已完成"
-                notification.message = '当前电量：' + str(self.BatteryPercent) + "%\n" + '当前状态：' + self.BatteryStatusStr
+                notification.title = "HUAWEI Mobile WiFi 3 Pro finished charging"
+                notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
                 notification.icon = 'app/resource/images/icons/battery_over_80.ico'
                 notification.send(block=False)
             elif self.BatteryPercent < 30 and self.BatteryStatus == "0" and not self.if_already_notify:
                 self.if_already_notify = True 
                 notification = Notify()
-                notification.title = "华为随行WiFi 3 Pro电量不足"
-                notification.message = '当前电量：' + str(self.BatteryPercent) + "%\n" + '当前状态：' + self.BatteryStatusStr
+                notification.title = "HUAWEI Mobile WiFi 3 Pro need charging"
+                notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
                 notification.icon = 'app/resource/images/icons/battery_below_30.ico'
                 notification.send(block=False)
+
+            # process sim lock status
+            self.sim_lock_status_str = "Locked" if sim_lock_status == 1 else "Unlocked"
+
+            # process wifi connection status
+            self.wifi_connection_status_dic = {
+                7: "Network access not allowed",
+                11: "Network access not allowed",
+                14: "Network access not allowed",
+                37: "Network access not allowed",
+                12: "Connection failed, roaming not allowed",
+                13: "Connection failed, roaming not allowed",
+                201: "Connection failed, bandwidth exceeded",
+                900: "Connecting",
+                901: "Connected",
+                902: "Disconnected",
+                903: "Disconnecting",
+                904: "Connection failed or disabled"
+            }
+            self.wifi_connection_status_str = self.wifi_connection_status_dic[wifi_connection_status] if wifi_connection_status in self.wifi_connection_status_dic.keys() else "Connection failed, the profile is invalid"
+
+            # process connection status
+            self.connection_status_str = self.wifi_connection_status_dic[connection_status] if connection_status in self.wifi_connection_status_dic.keys() else "Connection failed, the profile is invalid"
+
+            # process network type
+            self.network_type_dic = {
+                0: "No Service",
+                1: "GSM",
+                2: "GPRS (2.5G)",
+                3: "EDGE (2.75G)",
+                4: "WCDMA (3G)",
+                5: "HSDPA (3G)",
+                6: "HSUPA (3G)",
+                7: "HSPA (3G)",
+                8: "TD-SCDMA (3G)",
+                9: "HSPA+ (4G)",
+                10: "EV-DO rev. 0",
+                11: "EV-DO rev. A",
+                12: "EV-DO rev. B",
+                13: "1xRTT",
+                14: "UMB",
+                15: "1xEVDV",
+                16: "3xRTT",
+                17: "HSPA+ 64QAM",
+                18: "HSPA+ MIMO",
+                19: "LTE (4G)",
+                41: "UMTS (3G)",
+                44: "HSPA (3G)",
+                45: "HSPA+ (3G)",
+                46: "DC-HSPA+ (3G)",
+                64: "HSPA (3G)",
+                65: "HSPA+ (3G)",
+                101: "LTE (4G)"
+            }
+            self.network_type_str = self.network_type_dic[current_network_type] if current_network_type in self.network_type_dic.keys() else "Unknown Connection Type"
+
+            # update monitoring status dic
+            self.monitoring_status_dic["Battery Percent"] = self.BatteryPercent
+            self.monitoring_status_dic["Sim Lock Status"] = self.sim_lock_status_str
+            self.monitoring_status_dic["Wifi Connection Status"] = self.wifi_connection_status_str
+            self.monitoring_status_dic["Connection Status"] = self.connection_status_str
+            self.monitoring_status_dic["Network Type"] = self.network_type_str
+            self.monitoring_status_dic["Signal Strength"] = self.signal_strength
+            self.monitoring_status_dic["Max Signal Strength"] = self.max_signal_strength
+            self.monitoring_status_dic["Current Wifi User"] = self.current_wifi_user
 
         else:
             print("Request 'get_status' failed with status code:", response_status.status_code)
@@ -111,6 +189,8 @@ class Router_HW:
     def update_monitoring_status(self):
         self.get_status()
         
+    def get_monitoring_status_dic(self):
+        return self.monitoring_status_dic
 
 
 

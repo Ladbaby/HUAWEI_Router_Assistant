@@ -1,6 +1,7 @@
 SettingInterface,
 #view {
-    background-color: transparent;
+    /* background-color: transparent; */
+    background-color: rgba(39, 39, 39, 0.93);
 }
 
 QScrollArea {

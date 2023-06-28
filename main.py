@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
     timer = QTimer()
     timer.timeout.connect(update)
-    timer.start(6000)
+    timer.start(600000)
     
     app.exec_()
 

@@ -20,10 +20,12 @@ LinkCard:hover {
 }
 
 LinkCardView {
-    background-color: transparent;
+    /* background-color: transparent; */
+    background-color: rgba(39, 39, 39, 0.93);
     border: none;
 }
 
 #view {
-    background-color: transparent;
+    /* background-color: transparent; */
+    background-color: rgba(39, 39, 39, 0.93);
 }

@@ -1,15 +1,47 @@
 # coding:utf-8
 from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtGui import QPixmap, QPainter, QColor, QBrush, QPainterPath
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
 
-from qfluentwidgets import ScrollArea, isDarkTheme, FluentIcon
+from qfluentwidgets import ScrollArea, isDarkTheme, FluentIcon, SingleDirectionScrollArea
 from ..common.config import cfg, HELP_URL, REPO_URL, EXAMPLE_URL, FEEDBACK_URL
 from ..common.icon import Icon, FluentIconBase
 from ..components.link_card import LinkCardView
 from ..components.sample_card import SampleCardView
 from ..common.style_sheet import StyleSheet
+from ..components.battery_card import BatteryCard
+from ..components.monitoring_status_card import MonitoringStatusCard
 
+class BannerCardView(SingleDirectionScrollArea):
+
+    def __init__(self, parent=None):
+        super().__init__(parent, Qt.Horizontal)
+        self.view = QWidget(self)
+        self.hBoxLayout = QHBoxLayout(self.view)
+
+        self.hBoxLayout.setContentsMargins(36, 0, 0, 0)
+        self.hBoxLayout.setSpacing(12)
+        self.hBoxLayout.setAlignment(Qt.AlignLeft)
+
+        self.setWidget(self.view)
+        self.setWidgetResizable(True)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        self.view.setObjectName('view')
+        StyleSheet.BATTERY_CARD.apply(self)
+
+    def addBatteryCard(self, ring_value, title, content):
+        """ add link card """
+        self.battery_card = BatteryCard(ring_value, title, content, self.view)
+        self.hBoxLayout.addWidget(self.battery_card, 0, Qt.AlignLeft)
+
+    def updateBatteryCard(self, ring_value):
+        self.battery_card.update_ring_value(ring_value)
+
+    def addMonitoringStatusCard(self, monitoring_status_dic):
+        self.monitoring_status_card = MonitoringStatusCard(monitoring_status_dic)
+        self.hBoxLayout.addWidget(self.monitoring_status_card, 0, Qt.AlignLeft)
 
 class BannerWidget(QWidget):
     """ Banner widget """
@@ -18,59 +50,35 @@ class BannerWidget(QWidget):
         super().__init__(parent=parent)
         self.router = router
         self.setFixedHeight(336)
+        # self.setFixedHeight(600)
 
         self.vBoxLayout = QVBoxLayout(self)
-        self.galleryLabel = QLabel('HUAWEI mobile WiFi 3 Pro', self)
+        self.galleryLabel = QLabel('HUAWEI Mobile WiFi 3 Pro', self)
         self.banner = QPixmap(':/gallery/images/header1.png')
-        self.linkCardView = LinkCardView(self)
+        self.bannerCardView = BannerCardView(self)
 
         self.galleryLabel.setObjectName('galleryLabel')
 
         self.vBoxLayout.setSpacing(0)
         self.vBoxLayout.setContentsMargins(0, 20, 0, 0)
         self.vBoxLayout.addWidget(self.galleryLabel)
-        self.vBoxLayout.addWidget(self.linkCardView, 1, Qt.AlignBottom)
+        self.vBoxLayout.addWidget(self.bannerCardView, 1, Qt.AlignBottom)
         self.vBoxLayout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
         # No.0
-        self.linkCardView.addCard(
-            ':/gallery/images/logo.png',
-            self.tr('Battery Information'),
-            self.tr(str(self.router.get_battery_percent()) + '%\n' + self.router.get_battery_status()),
-            HELP_URL
+        self.bannerCardView.addBatteryCard(
+            self.router.get_battery_percent(),
+            self.tr('Battery'),
+            self.tr(self.router.get_battery_status()),
         )
 
-        self.linkCardView.addCard(
-            FluentIcon.GITHUB,
-            self.tr('GitHub repo'),
-            self.tr(
-                'The latest fluent design controls and styles for your applications.'),
-            REPO_URL
+        self.bannerCardView.addMonitoringStatusCard(
+            self.router.get_monitoring_status_dic()
         )
 
-        self.linkCardView.addCard(
-            FluentIcon.CODE,
-            self.tr('Code samples'),
-            self.tr(
-                'Find samples that demonstrate specific tasks, features and APIs.'),
-            EXAMPLE_URL
-        )
-
-        self.linkCardView.addCard(
-            FluentIcon.FEEDBACK,
-            self.tr('Send feedback'),
-            self.tr('Help us improve PyQt-Fluent-Widgets by providing feedback.'),
-            FEEDBACK_URL
-        )
 
     def update_monitoring_status(self):
-        self.linkCardView.update_card_at(
-            0, 
-            ':/gallery/images/logo.png',
-            self.tr('Battery Information'),
-            self.tr(str(self.router.get_battery_percent()) + '%\n' + self.router.get_battery_status()),
-            HELP_URL
-        )
+        self.bannerCardView.updateBatteryCard(self.router.get_battery_percent())
 
     def paintEvent(self, e):
         super().paintEvent(e)
