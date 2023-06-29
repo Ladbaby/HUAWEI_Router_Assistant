@@ -8,12 +8,12 @@
 <CurrentServiceDomain>3</CurrentServiceDomain>
 <RoamingStatus>0</RoamingStatus>
 <BatteryStatus>0</BatteryStatus>
-<BatteryLevel>3</BatteryLevel>
-<BatteryPercent>67</BatteryPercent>
+<BatteryLevel>4</BatteryLevel>
+<BatteryPercent>80</BatteryPercent>
 <BatteryIndicator>0</BatteryIndicator>
 <simlockStatus>0</simlockStatus>
-<PrimaryDns>221.5.88.88</PrimaryDns>
-<SecondaryDns>116.116.116.116</SecondaryDns>
+<PrimaryDns>116.116.116.116</PrimaryDns>
+<SecondaryDns>221.5.88.88</SecondaryDns>
 <wififrequence>0</wififrequence>
 <flymode>0</flymode>
 <PrimaryIPv6Dns>2408:8888:0:8888::8</PrimaryIPv6Dns>

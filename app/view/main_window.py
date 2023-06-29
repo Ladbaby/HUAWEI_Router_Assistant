@@ -8,6 +8,7 @@ from qfluentwidgets import FluentIcon as FIF
 
 from .gallery_interface import GalleryInterface
 from .home_interface import HomeInterface
+from .monitoring_status_interface import MonitoringStatusInterface
 from .basic_input_interface import BasicInputInterface
 from .date_time_interface import DateTimeInterface
 from .dialog_interface import DialogInterface
@@ -37,6 +38,7 @@ class MainWindow(FluentWindow):
 
         # create sub interface
         self.homeInterface = HomeInterface(router, self)
+        self.monitoringStatusInterface = MonitoringStatusInterface(router, self)
         self.iconInterface = IconInterface(self)
         self.basicInputInterface = BasicInputInterface(self)
         self.dateTimeInterface = DateTimeInterface(self)
@@ -61,6 +63,7 @@ class MainWindow(FluentWindow):
 
     def update_monitoring_status(self):
         self.homeInterface.update_monitoring_status()
+        self.monitoringStatusInterface.update_monitoring_status()
 
     def initLayout(self):
         signalBus.switchToSampleCard.connect(self.switchToSample)
@@ -70,6 +73,7 @@ class MainWindow(FluentWindow):
         # add navigation items
         t = Translator()
         self.addSubInterface(self.homeInterface, FIF.HOME, self.tr('Home'))
+        self.addSubInterface(self.monitoringStatusInterface, Icon.GRID, self.tr('Monitoring Status'))
         self.addSubInterface(self.iconInterface, Icon.EMOJI_TAB_SYMBOLS, t.icons)
         self.navigationInterface.addSeparator()
 
@@ -100,7 +104,7 @@ class MainWindow(FluentWindow):
         self.resize(960, 780)
         self.setMinimumWidth(760)
         self.setWindowIcon(QIcon(':/gallery/images/logo.png'))
-        self.setWindowTitle('PyQt-Fluent-Widgets')
+        self.setWindowTitle('HUAWEI Router Assistant')
 
         desktop = QApplication.desktop().availableGeometry()
         w, h = desktop.width(), desktop.height()

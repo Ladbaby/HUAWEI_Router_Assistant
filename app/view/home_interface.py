@@ -39,9 +39,9 @@ class BannerCardView(SingleDirectionScrollArea):
     def updateBatteryCard(self, ring_value):
         self.battery_card.update_ring_value(ring_value)
 
-    def addMonitoringStatusCard(self, monitoring_status_dic):
-        self.monitoring_status_card = MonitoringStatusCard(monitoring_status_dic)
-        self.hBoxLayout.addWidget(self.monitoring_status_card, 0, Qt.AlignLeft)
+    # def addMonitoringStatusCard(self, monitoring_status_dic):
+    #     self.monitoring_status_card = MonitoringStatusCard(monitoring_status_dic)
+    #     self.hBoxLayout.addWidget(self.monitoring_status_card, 0, Qt.AlignLeft)
 
 class BannerWidget(QWidget):
     """ Banner widget """
@@ -72,9 +72,9 @@ class BannerWidget(QWidget):
             self.tr(self.router.get_battery_status()),
         )
 
-        self.bannerCardView.addMonitoringStatusCard(
-            self.router.get_monitoring_status_dic()
-        )
+        # self.bannerCardView.addMonitoringStatusCard(
+        #     self.router.get_monitoring_status_dic()
+        # )
 
 
     def update_monitoring_status(self):

@@ -26,7 +26,7 @@ class MonitoringStatusCard(QWidget):
     def __init__(self, monitoring_status_dic):
         super().__init__()
 
-        self.hBoxLayout = QHBoxLayout(self)
+        self.vBoxLayout = QVBoxLayout(self)
         self.tableView = TableWidget(self)
 
         # NOTE: use custom item delegate
@@ -49,18 +49,33 @@ class MonitoringStatusCard(QWidget):
 
         self.tableView.verticalHeader().hide()
         self.tableView.setHorizontalHeaderLabels(['Name', 'Value'])
-        # self.tableView.resizeColumnsToContents()
+        self.tableView.resizeColumnsToContents()
         self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tableView.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        table_height = self.tableView.verticalHeader().length()
+        self.setFixedHeight(table_height + 50)
+        # self.tableView.setMinimumHeight(500)
         # self.tableView.setSortingEnabled(True)
+        # self.tableView.setFixedHeight(1000)
 
-        self.setStyleSheet("Demo{background: rgb(249, 249, 249)} ")
-        self.hBoxLayout.setContentsMargins(0, 0, 0, 0)
-        self.hBoxLayout.addWidget(self.tableView)
+        # self.setStyleSheet("Demo{background: rgb(249, 249, 249)} ")
+        self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
+        self.vBoxLayout.addWidget(self.tableView)
         # self.resize(635, 700)
-        self.resize(800, 1000)
-        StyleSheet.BATTERY_CARD.apply(self)
+        # self.resize(800, 1000)
+        StyleSheet.MONITORING_STATUS_CARD.apply(self)
+        print("card", self.size())
 
-    def update_ring_value(self, ring_value):
-        self.progressRing.setValue(ring_value)
+    def updateMonitoringStatus(self, monitoring_status_dic):
+        i = 0
+        for key, value in monitoring_status_dic.items():
+            if type(value) == int:
+                value = str(value)
+            for j in range(2):
+                if j == 0:
+                    self.tableView.setItem(i, j, QTableWidgetItem(key))
+                elif j == 1:
+                    self.tableView.setItem(i, j, QTableWidgetItem(value))
+            i += 1
 
 

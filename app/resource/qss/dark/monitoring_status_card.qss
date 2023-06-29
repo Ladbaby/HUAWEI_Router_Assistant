@@ -1,0 +1,43 @@
+SettingInterface,
+#view {
+    border-radius: 5px;
+    /* background-color: rgba(0, 0, 0, 100); */
+}
+
+#interface {
+    border-radius: 5px;
+    background-color: transparent;
+    height: 100%;
+}
+
+#monitoringStatusInterface {
+    background-color: transparent;
+    height: 100%
+}
+
+/* #bannerWidget {
+    background-color: rgba(255, 0, 0, 100);
+} */
+
+QScrollArea {
+    border: none;
+    /* background-color: rgb(62, 62, 62); */
+    /* margin: 20px; */
+    /* border-radius: 5px; */
+}
+
+#bannerCardView {
+    background-color: rgba(62, 62, 62, 240);
+    border: none;
+    border-radius: 5px;
+    margin: 20px;
+}
+
+
+BannerWidget > #galleryLabel {
+    font: 42px 'Segoe UI SemiBold', 'Microsoft YaHei SemiBold';
+    background-color: transparent;
+    /* background-color: rgba(255, 0, 0, 100); */
+    color: white;
+    padding-left: 28px;
+}
