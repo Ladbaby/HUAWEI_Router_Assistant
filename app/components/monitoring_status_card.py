@@ -52,8 +52,8 @@ class MonitoringStatusCard(QWidget):
         self.tableView.resizeColumnsToContents()
         self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableView.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-        table_height = self.tableView.verticalHeader().length()
-        self.setFixedHeight(table_height + 50)
+        table_height = self.tableView.verticalHeader().length() + self.tableView.horizontalHeader().height()
+        self.setFixedHeight(table_height)
         # self.tableView.setMinimumHeight(500)
         # self.tableView.setSortingEnabled(True)
         # self.tableView.setFixedHeight(1000)
@@ -64,7 +64,7 @@ class MonitoringStatusCard(QWidget):
         # self.resize(635, 700)
         # self.resize(800, 1000)
         StyleSheet.MONITORING_STATUS_CARD.apply(self)
-        print("card", self.size())
+        # print("card", self.size())
 
     def updateMonitoringStatus(self, monitoring_status_dic):
         i = 0

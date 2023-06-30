@@ -17,6 +17,7 @@ class StyleSheet(StyleSheetBase, Enum):
     GALLERY_INTERFACE = "gallery_interface"
     NAVIGATION_VIEW_INTERFACE = "navigation_view_interface"
     MONITORING_STATUS_CARD = "monitoring_status_card"
+    TRAFFIC_STATISTICS_CARD = "traffic_statistics_card"
 
     def path(self, theme=Theme.AUTO):
         theme = qconfig.theme if theme == Theme.AUTO else theme

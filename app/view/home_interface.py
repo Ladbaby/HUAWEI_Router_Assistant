@@ -10,7 +10,7 @@ from ..components.link_card import LinkCardView
 from ..components.sample_card import SampleCardView
 from ..common.style_sheet import StyleSheet
 from ..components.battery_card import BatteryCard
-from ..components.monitoring_status_card import MonitoringStatusCard
+from ..components.traffic_statistics_card import TrafficStatisticsCard
 
 class BannerCardView(SingleDirectionScrollArea):
 
@@ -39,9 +39,12 @@ class BannerCardView(SingleDirectionScrollArea):
     def updateBatteryCard(self, ring_value):
         self.battery_card.update_ring_value(ring_value)
 
-    # def addMonitoringStatusCard(self, monitoring_status_dic):
-    #     self.monitoring_status_card = MonitoringStatusCard(monitoring_status_dic)
-    #     self.hBoxLayout.addWidget(self.monitoring_status_card, 0, Qt.AlignLeft)
+    def addTrafficStatisticsCard(self, traffic_statistics_dic):
+        self.traffic_statistics_card = TrafficStatisticsCard(traffic_statistics_dic)
+        self.hBoxLayout.addWidget(self.traffic_statistics_card, 0, Qt.AlignLeft)
+
+    def updateTrafficStatisticsCard(self, traffic_statistics_dic):
+        self.traffic_statistics_card.update_traffic_statistics(traffic_statistics_dic)
 
 class BannerWidget(QWidget):
     """ Banner widget """
@@ -72,6 +75,10 @@ class BannerWidget(QWidget):
             self.tr(self.router.get_battery_status()),
         )
 
+        self.bannerCardView.addTrafficStatisticsCard(
+            self.router.get_traffic_statistics_dic()
+        )
+
         # self.bannerCardView.addMonitoringStatusCard(
         #     self.router.get_monitoring_status_dic()
         # )
@@ -79,6 +86,9 @@ class BannerWidget(QWidget):
 
     def update_monitoring_status(self):
         self.bannerCardView.updateBatteryCard(self.router.get_battery_percent())
+
+    def update_traffic_statistics(self):
+        self.bannerCardView.updateTrafficStatisticsCard(self.router.get_traffic_statistics_dic())
 
     def paintEvent(self, e):
         super().paintEvent(e)
@@ -124,6 +134,9 @@ class HomeInterface(ScrollArea):
 
     def update_monitoring_status(self):
         self.banner.update_monitoring_status()
+
+    def update_traffic_statistics(self):
+        self.banner.update_traffic_statistics()
 
     def __initWidget(self):
         self.view.setObjectName('view')

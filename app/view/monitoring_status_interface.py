@@ -38,9 +38,9 @@ class BannerCardView(SingleDirectionScrollArea):
         self.monitoring_status_card = MonitoringStatusCard(monitoring_status_dic)
         self.vBoxLayout.addWidget(self.monitoring_status_card, 0, Qt.AlignTop)
         # self.view.setFixedHeight(480)
-        self.setFixedHeight(self.monitoring_status_card.height())
-        print("bannerView", self.view.size())
-        print("monitoring_status_card", self.monitoring_status_card.size())
+        self.setFixedHeight(self.monitoring_status_card.height() + 50)
+        # print("bannerView", self.view.size())
+        # print("monitoring_status_card", self.monitoring_status_card.size())
 
 class BannerWidget(QWidget):
     """ Banner widget """
@@ -99,7 +99,7 @@ class BannerWidget(QWidget):
 
         # draw banner image
         pixmap = self.banner.scaled(
-            self.size(), transformMode=Qt.SmoothTransformation)
+            self.size(), transformMode=Qt.SmoothTransformation, aspectRatioMode=Qt.KeepAspectRatioByExpanding)
         path.addRect(QRectF(0, h, w, self.height() - h))
         painter.fillPath(path, QBrush(pixmap))
 
@@ -118,7 +118,7 @@ class MonitoringStatusInterface(ScrollArea):
         # print("bannerWidget", self.size())
 
         self.__initWidget()
-        print("interface", self.size())
+        # print("interface", self.size())
 
     def update_monitoring_status(self):
         self.banner.update_monitoring_status()

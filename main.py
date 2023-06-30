@@ -75,15 +75,23 @@ if __name__ == "__main__":
 
     def update():
         router.update_monitoring_status()
+        icon = QIcon(router.get_battery_icon_path())
+        tray.setIcon(icon)
         if w.isVisible():
-            icon = QIcon(router.get_battery_icon_path())
-            tray.setIcon(icon)
-
             w.update_monitoring_status()
+
+    def update_traffic_statistics():
+        if w.isVisible():
+            router.update_traffic_statistics()
+            w.update_traffic_statistics()
 
     timer = QTimer()
     timer.timeout.connect(update)
     timer.start(600000)
+
+    timer_traffic = QTimer()
+    timer_traffic.timeout.connect(update_traffic_statistics)
+    timer_traffic.start(1000)
     
     app.exec_()
 

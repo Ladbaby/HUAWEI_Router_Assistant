@@ -17,6 +17,7 @@ class Router_HW:
         os.environ['NO_PROXY'] = router_ip
         self.session_url = 'http://' + router_ip + '/api/webserver/SesTokInfo'
         self.status_url = 'http://' + router_ip + '/api/monitoring/status'
+        self.traffic_statistics_url = 'http://' + router_ip + '/api/monitoring/traffic-statistics'
         self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.51'}
         self.cookies = {"SessionID": ""}
 
@@ -32,6 +33,7 @@ class Router_HW:
         self.previous_battery_status = ""
 
         self.monitoring_status_dic = {}
+        self.traffic_statistics_dic = {}
 
     def get_session_token(self):
         response_session = requests.get(self.session_url, headers=self.headers, timeout=60, verify=False)
@@ -57,8 +59,8 @@ class Router_HW:
         self.get_session_token()
         response_status = requests.get(self.status_url, headers=self.headers, timeout=60, verify=False, cookies=self.cookies)
         if response_status.status_code == 200:
-            with open('status.xml', 'w') as f:
-                f.write(response_status.text)
+            # with open('status.xml', 'w') as f:
+            #     f.write(response_status.text)
             root = ET.fromstring(response_status.text)
 
             # for key in root.iter():
@@ -78,6 +80,11 @@ class Router_HW:
             self.max_signal_strength = int(root.find('maxsignal').text)
 
             current_network_type = int(root.find('CurrentNetworkType').text)
+
+            primary_dns = root.find('PrimaryDns').text
+            secondary_dns = root.find('SecondaryDns').text
+            primary_ipv6_dns = root.find('PrimaryIPv6Dns').text
+            secondary_ipv6_dns = root.find('SecondaryIPv6Dns').text
 
             # process battery status
             if self.previous_battery_status != self.BatteryStatus:
@@ -163,9 +170,56 @@ class Router_HW:
             self.monitoring_status_dic["Signal Strength"] = self.signal_strength
             self.monitoring_status_dic["Max Signal Strength"] = self.max_signal_strength
             self.monitoring_status_dic["Current Wifi User"] = self.current_wifi_user
+            self.monitoring_status_dic["Primary DNS"] = primary_dns
+            self.monitoring_status_dic["Secondary DNS"] = secondary_dns
+            self.monitoring_status_dic["Primary IPv6 DNS"] = primary_ipv6_dns
+            self.monitoring_status_dic["Secondary IPv6 DNS"] = secondary_ipv6_dns
+
+            self.get_traffic_statistics()
 
         else:
             print("Request 'get_status' failed with status code:", response_status.status_code)
+
+    def get_traffic_statistics(self):
+        self.get_session_token()
+        response_status = requests.get(self.traffic_statistics_url, headers=self.headers, timeout=60, verify=False, cookies=self.cookies)
+        if response_status.status_code == 200:
+            with open('traffic_statistics.xml', 'w') as f:
+                f.write(response_status.text)
+            root = ET.fromstring(response_status.text)
+
+            current_connect_time = self.calc_time(root.find('CurrentConnectTime').text)
+            # current_upload = self.calc_traffic(root.find('CurrentUpload').text)
+            # current_download = self.calc_traffic(root.find('CurrentDownload').text)
+            current_download_rate = self.calc_traffic(root.find('CurrentDownloadRate').text) + '/s'
+            current_upload_rate = self.calc_traffic(root.find('CurrentUploadRate').text) + '/s'
+            total_upload = self.calc_traffic(root.find('TotalUpload').text)
+            total_download = self.calc_traffic(root.find('TotalDownload').text)
+            total_connect_time = self.calc_time(root.find('TotalConnectTime').text)
+
+            # self.traffic_statistics_dic["Current Upload"] = current_upload
+            # self.traffic_statistics_dic["Current Download"] = current_download
+            self.traffic_statistics_dic["Current Download Rate"] = current_download_rate
+            self.traffic_statistics_dic["Current Upload Rate"] = current_upload_rate
+            self.traffic_statistics_dic["Total Upload"] = total_upload
+            self.traffic_statistics_dic["Total Download"] = total_download
+            self.traffic_statistics_dic["Current Connect Time"] = current_connect_time
+            self.traffic_statistics_dic["Total Connect Time"] = total_connect_time
+        else:
+            print("Request 'get_traffic_statistics' failed with status code:", response_status.status_code)
+
+    def calc_traffic(self, input_str):
+        if int(input_str) > 1024 * 1024 * 1024:
+            output = str(round(int(input_str) / 1024 / 1024 / 1024, 2)) + " GB"
+        else:
+            output = str(round(int(input_str) / 1024 / 1024, 2)) + " MB" if int(input_str) > 1024 * 1024 else str(round(int(input_str) / 1024, 2)) + " KB"
+        return output
+
+    def calc_time(self, seconds):
+        seconds = int(seconds)
+        m, s = divmod(seconds, 60)
+        h, m = divmod(m, 60)
+        return "%d hours, %d minutes, %d seconds" % (h, m, s)
 
     def get_battery_percent(self):
         # self.get_status()
@@ -186,8 +240,14 @@ class Router_HW:
         elif battery_percent <= 30:
             return 'app/resource/images/icons/battery_below_30.ico'
 
+    def get_traffic_statistics_dic(self):
+        return self.traffic_statistics_dic
+
     def update_monitoring_status(self):
         self.get_status()
+
+    def update_traffic_statistics(self):
+        self.get_traffic_statistics()
         
     def get_monitoring_status_dic(self):
         return self.monitoring_status_dic

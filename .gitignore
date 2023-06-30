@@ -3,3 +3,4 @@ app/resource/images/*
 main.spec
 dist/*
 build/*
+*.xml
