@@ -40,7 +40,8 @@ class BatteryCard(QFrame):
         self.titleLabel.setObjectName('contentLabel')
         self.contentLabel.setObjectName('titleLabel')
 
-    def update_ring_value(self, ring_value):
+    def update_ring_value(self, ring_value, battery_status_str):
         self.progressRing.setValue(ring_value)
+        self.contentLabel.setText(battery_status_str)
 
 

@@ -11,6 +11,7 @@ from ..components.sample_card import SampleCardView
 from ..common.style_sheet import StyleSheet
 from ..components.battery_card import BatteryCard
 from ..components.traffic_statistics_card import TrafficStatisticsCard
+from ..components.month_statistics_card import MonthStatisticsCard
 
 class BannerCardView(SingleDirectionScrollArea):
 
@@ -36,8 +37,8 @@ class BannerCardView(SingleDirectionScrollArea):
         self.battery_card = BatteryCard(ring_value, title, content, self.view)
         self.hBoxLayout.addWidget(self.battery_card, 0, Qt.AlignLeft)
 
-    def updateBatteryCard(self, ring_value):
-        self.battery_card.update_ring_value(ring_value)
+    def updateBatteryCard(self, ring_value, battery_status_str):
+        self.battery_card.update_ring_value(ring_value, battery_status_str)
 
     def addTrafficStatisticsCard(self, traffic_statistics_dic):
         self.traffic_statistics_card = TrafficStatisticsCard(traffic_statistics_dic)
@@ -45,6 +46,13 @@ class BannerCardView(SingleDirectionScrollArea):
 
     def updateTrafficStatisticsCard(self, traffic_statistics_dic):
         self.traffic_statistics_card.update_traffic_statistics(traffic_statistics_dic)
+
+    def addMonthStatisticsCard(self, month_statistics_dic):
+        self.month_statistics_card = MonthStatisticsCard(month_statistics_dic)
+        self.hBoxLayout.addWidget(self.month_statistics_card, 0, Qt.AlignLeft)
+
+    def updateMonthStatisticsCard(self, month_statistics_dic):
+        self.traffic_statistics_card.update_month_statistics(month_statistics_dic)
 
 class BannerWidget(QWidget):
     """ Banner widget """
@@ -79,13 +87,13 @@ class BannerWidget(QWidget):
             self.router.get_traffic_statistics_dic()
         )
 
-        # self.bannerCardView.addMonitoringStatusCard(
-        #     self.router.get_monitoring_status_dic()
-        # )
+        self.bannerCardView.addMonthStatisticsCard(
+            self.router.get_month_statistics_dic()
+        )
 
 
     def update_monitoring_status(self):
-        self.bannerCardView.updateBatteryCard(self.router.get_battery_percent())
+        self.bannerCardView.updateBatteryCard(self.router.get_battery_percent(), self.router.get_battery_status())
 
     def update_traffic_statistics(self):
         self.bannerCardView.updateTrafficStatisticsCard(self.router.get_traffic_statistics_dic())

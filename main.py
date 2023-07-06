@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     timer = QTimer()
     timer.timeout.connect(update)
-    timer.start(600000)
+    timer.start(15000)
 
     timer_traffic = QTimer()
     timer_traffic.timeout.connect(update_traffic_statistics)

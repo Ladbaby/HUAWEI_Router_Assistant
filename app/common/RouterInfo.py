@@ -18,6 +18,8 @@ class Router_HW:
         self.session_url = 'http://' + router_ip + '/api/webserver/SesTokInfo'
         self.status_url = 'http://' + router_ip + '/api/monitoring/status'
         self.traffic_statistics_url = 'http://' + router_ip + '/api/monitoring/traffic-statistics'
+        self.month_statistics_url = 'http://' + router_ip + '/api/monitoring/month_statistics'
+        self.start_date_url = 'http://' + router_ip + '/api/monitoring/start_date'
         self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.51'}
         self.cookies = {"SessionID": ""}
 
@@ -34,6 +36,7 @@ class Router_HW:
 
         self.monitoring_status_dic = {}
         self.traffic_statistics_dic = {}
+        self.month_statistics_dic = {}
 
     def get_session_token(self):
         response_session = requests.get(self.session_url, headers=self.headers, timeout=60, verify=False)
@@ -176,6 +179,11 @@ class Router_HW:
             self.monitoring_status_dic["Secondary IPv6 DNS"] = secondary_ipv6_dns
 
             self.get_traffic_statistics()
+            self.get_month_statistics()
+            self.get_start_date()
+
+            self.month_statistics_dic["Month Percentage"] = round(self.monitoring_status_dic["Current Upload Download Raw"] / self.monitoring_status_dic["Traffic Max Limit Raw"] * 100, 2)
+
 
         else:
             print("Request 'get_status' failed with status code:", response_status.status_code)
@@ -184,8 +192,8 @@ class Router_HW:
         self.get_session_token()
         response_status = requests.get(self.traffic_statistics_url, headers=self.headers, timeout=60, verify=False, cookies=self.cookies)
         if response_status.status_code == 200:
-            with open('traffic_statistics.xml', 'w') as f:
-                f.write(response_status.text)
+            # with open('traffic_statistics.xml', 'w') as f:
+            #     f.write(response_status.text)
             root = ET.fromstring(response_status.text)
 
             current_connect_time = self.calc_time(root.find('CurrentConnectTime').text)
@@ -208,6 +216,53 @@ class Router_HW:
         else:
             print("Request 'get_traffic_statistics' failed with status code:", response_status.status_code)
 
+    def get_month_statistics(self):
+        self.get_session_token()
+        response_status = requests.get(
+            self.month_statistics_url, headers=self.headers, timeout=60, verify=False, cookies=self.cookies
+        )
+        if response_status.status_code == 200:
+            # with open('month_statistics.xml', 'w') as f:
+            #     f.write(response_status.text)
+            root = ET.fromstring(response_status.text)
+
+            current_month_download = self.calc_traffic(root.find('CurrentMonthDownload').text)
+            current_month_download_raw = int(root.find('CurrentMonthDownload').text)
+            current_month_upload = self.calc_traffic(root.find('CurrentMonthUpload').text)
+            current_month_upload_raw = int(root.find('CurrentMonthUpload').text)
+            current_upload_download_raw = current_month_upload_raw + current_month_download_raw
+            month_duration = self.calc_time(root.find('MonthDuration').text)
+            month_last_clear_time = root.find('MonthLastClearTime').text
+            current_day_used = self.calc_traffic(root.find('CurrentDayUsed').text)
+            current_day_duration = self.calc_time(root.find('CurrentDayDuration').text)
+
+            self.monitoring_status_dic["Current Month Download"] = current_month_download
+            self.monitoring_status_dic["Current Month Upload"] = current_month_upload
+            self.monitoring_status_dic["Current Upload Download Raw"] = current_upload_download_raw
+            self.month_statistics_dic["Current Upload Download"] = self.calc_traffic(current_upload_download_raw)
+            self.monitoring_status_dic["Month Duration"] = month_duration
+            self.monitoring_status_dic["Month Last Clear Time"] = month_last_clear_time
+            self.monitoring_status_dic["Current Day Used"] = current_day_used
+            self.monitoring_status_dic["Current Day Duration"] = current_day_duration
+            
+    def get_start_date(self):
+        self.get_session_token()
+        response_status = requests.get(
+            self.start_date_url, headers=self.headers, timeout=60, verify=False, cookies=self.cookies
+        )
+        if response_status.status_code == 200:
+            # with open('start_date.xml', 'w') as f:
+            #     f.write(response_status.text)
+            root = ET.fromstring(response_status.text)
+
+            data_limit = root.find('DataLimit').text
+            traffic_max_limit = self.calc_traffic(root.find('trafficmaxlimit').text)
+            traffic_max_limit_raw = int(root.find('trafficmaxlimit').text)
+
+            self.monitoring_status_dic["Data Limit"] = data_limit
+            self.month_statistics_dic["Traffic Max Limit"] = traffic_max_limit
+            self.monitoring_status_dic["Traffic Max Limit Raw"] = traffic_max_limit_raw
+
     def calc_traffic(self, input_str):
         if int(input_str) > 1024 * 1024 * 1024:
             output = str(round(int(input_str) / 1024 / 1024 / 1024, 2)) + " GB"
@@ -219,7 +274,8 @@ class Router_HW:
         seconds = int(seconds)
         m, s = divmod(seconds, 60)
         h, m = divmod(m, 60)
-        return "%d hours, %d minutes, %d seconds" % (h, m, s)
+        d, h = divmod(h, 60)
+        return "%d days, %d hours, %d minutes, %d seconds" % (d, h, m, s)
 
     def get_battery_percent(self):
         # self.get_status()
@@ -252,6 +308,8 @@ class Router_HW:
     def get_monitoring_status_dic(self):
         return self.monitoring_status_dic
 
+    def get_month_statistics_dic(self):
+        return self.month_statistics_dic
 
 
 

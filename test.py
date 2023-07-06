@@ -23,6 +23,8 @@ class Router_HW:
         self.login_url = 'http://' + router_ip + '/api/user/login'
         self.token_url = 'http://' + router_ip + '/api/webserver/token'
         self.challenge_login_url = 'http://' + router_ip + '/api/user/challenge_login'
+        self.month_statistics_url = 'http://' + router_ip + '/api/monitoring/month_statistics'
+        self.start_date_url = 'http://' + router_ip + '/api/monitoring/start_date'
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.51',
             "__requestverificationtoken": ""
@@ -239,6 +241,24 @@ class Router_HW:
             with open('challenge_login.xml', 'w') as f:
                 f.write(response_status.text)
 
+    def get_month_statistics(self):
+        self.get_session_token()
+        response_status = requests.get(
+            self.month_statistics_url, headers=self.headers, timeout=60, verify=False, cookies=self.cookies
+        )
+        if response_status.status_code == 200:
+            with open('month_statistics.xml', 'w') as f:
+                f.write(response_status.text)
+
+    def get_start_date(self):
+        self.get_session_token()
+        response_status = requests.get(
+            self.start_date_url, headers=self.headers, timeout=60, verify=False, cookies=self.cookies
+        )
+        if response_status.status_code == 200:
+            with open('start_date.xml', 'w') as f:
+                f.write(response_status.text)
+
 
     def get_battery_percent(self):
         # self.get_status()
@@ -268,8 +288,6 @@ class Router_HW:
 
 if __name__ == "__main__":
     router = Router_HW()
-    router.get_status()
-    router.get_token()
-    router.challenge_login()
+    router.get_start_date()
 
 
