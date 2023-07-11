@@ -178,6 +178,8 @@ class Router_HW:
             self.monitoring_status_dic["Primary IPv6 DNS"] = primary_ipv6_dns
             self.monitoring_status_dic["Secondary IPv6 DNS"] = secondary_ipv6_dns
 
+            self.traffic_statistics_dic["Signal Strength"] = self.signal_strength
+
             self.get_traffic_statistics()
             self.get_month_statistics()
             self.get_start_date()
@@ -239,7 +241,6 @@ class Router_HW:
             self.monitoring_status_dic["Current Month Download"] = current_month_download
             self.monitoring_status_dic["Current Month Upload"] = current_month_upload
             self.monitoring_status_dic["Current Upload Download Raw"] = current_upload_download_raw
-            self.month_statistics_dic["Current Upload Download"] = self.calc_traffic(current_upload_download_raw)
             self.monitoring_status_dic["Month Duration"] = month_duration
             self.monitoring_status_dic["Month Last Clear Time"] = month_last_clear_time
             self.monitoring_status_dic["Current Day Used"] = current_day_used
@@ -262,6 +263,7 @@ class Router_HW:
             self.monitoring_status_dic["Data Limit"] = data_limit
             self.month_statistics_dic["Traffic Max Limit"] = traffic_max_limit
             self.monitoring_status_dic["Traffic Max Limit Raw"] = traffic_max_limit_raw
+            self.month_statistics_dic["Current Upload Download"] = self.calc_traffic(self.monitoring_status_dic["Traffic Max Limit Raw"] - self.monitoring_status_dic["Current Upload Download Raw"])
 
     def calc_traffic(self, input_str):
         if int(input_str) > 1024 * 1024 * 1024:

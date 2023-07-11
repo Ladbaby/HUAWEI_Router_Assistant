@@ -21,21 +21,27 @@ class CustomTableItemDelegate(TableItemDelegate):
             option.palette.setColor(QPalette.Text, Qt.red)
             option.palette.setColor(QPalette.HighlightedText, Qt.red)
 
-class TrafficStatisticsCard(QWidget):
+class TrafficStatisticsCard(QFrame):
 
     def __init__(self, traffic_statistics_dic):
         super().__init__()
 
-        self.iconWidget = IconWidget(":/gallery/images/icons/traffic.png", self)
+        self.iconWidget = IconWidget(self)
+        self.iconWidget.setIcon(":/gallery/images/icons/signal_" + str(traffic_statistics_dic["Signal Strength"]) + ".png")
+        self.title_label = QLabel("Traffic", self)
         self.upload_label = QLabel("↑: " + traffic_statistics_dic["Current Upload Rate"], self)
         self.download_label = QLabel("↓: " + traffic_statistics_dic["Current Download Rate"], self)
+
+        self.title_label.setObjectName('contentLabel')
+        self.upload_label.setObjectName('titleLabel')
+        self.download_label.setObjectName('titleLabel')
 
         self.hBoxLayout = QHBoxLayout(self)
         self.vBoxLayout = QVBoxLayout()
 
-        self.setFixedSize(360, 90)
-        # self.iconWidget.setFixedSize(48, 48)
-        self.iconWidget.setFixedSize(64, 64)
+        self.setFixedSize(360, 120)
+        self.iconWidget.setFixedSize(48, 48)
+        # self.iconWidget.setFixedSize(64, 64)
 
         self.hBoxLayout.setSpacing(28)
         self.hBoxLayout.setContentsMargins(20, 0, 0, 0)
@@ -47,14 +53,16 @@ class TrafficStatisticsCard(QWidget):
         self.hBoxLayout.addWidget(self.iconWidget)
         self.hBoxLayout.addLayout(self.vBoxLayout)
         self.vBoxLayout.addStretch(1)
+        self.vBoxLayout.addWidget(self.title_label)
         self.vBoxLayout.addWidget(self.upload_label)
         self.vBoxLayout.addWidget(self.download_label)
         self.vBoxLayout.addStretch(1)
 
-        StyleSheet.TRAFFIC_STATISTICS_CARD.apply(self)
+        # StyleSheet.TRAFFIC_STATISTICS_CARD.apply(self)
 
     def update_traffic_statistics(self, traffic_statistics_dic):
         self.upload_label.setText("↑: " + traffic_statistics_dic["Current Upload Rate"])
         self.download_label.setText("↓: " + traffic_statistics_dic["Current Download Rate"])
+        self.iconWidget.setIcon(":/gallery/images/icons/signal_" + str(traffic_statistics_dic["Signal Strength"]) + ".png")
 
 
