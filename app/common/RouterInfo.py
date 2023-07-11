@@ -179,6 +179,7 @@ class Router_HW:
             self.monitoring_status_dic["Secondary IPv6 DNS"] = secondary_ipv6_dns
 
             self.traffic_statistics_dic["Signal Strength"] = self.signal_strength
+            self.traffic_statistics_dic["Network Type"] = self.network_type_str
 
             self.get_traffic_statistics()
             self.get_month_statistics()

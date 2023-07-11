@@ -28,7 +28,7 @@ class TrafficStatisticsCard(QFrame):
 
         self.iconWidget = IconWidget(self)
         self.iconWidget.setIcon(":/gallery/images/icons/signal_" + str(traffic_statistics_dic["Signal Strength"]) + ".png")
-        self.title_label = QLabel("Traffic", self)
+        self.title_label = QLabel(traffic_statistics_dic["Network Type"], self)
         self.upload_label = QLabel("↑: " + traffic_statistics_dic["Current Upload Rate"], self)
         self.download_label = QLabel("↓: " + traffic_statistics_dic["Current Download Rate"], self)
 
@@ -61,6 +61,7 @@ class TrafficStatisticsCard(QFrame):
         # StyleSheet.TRAFFIC_STATISTICS_CARD.apply(self)
 
     def update_traffic_statistics(self, traffic_statistics_dic):
+        self.title_label.setText(traffic_statistics_dic["Network Type"])
         self.upload_label.setText("↑: " + traffic_statistics_dic["Current Upload Rate"])
         self.download_label.setText("↓: " + traffic_statistics_dic["Current Download Rate"])
         self.iconWidget.setIcon(":/gallery/images/icons/signal_" + str(traffic_statistics_dic["Signal Strength"]) + ".png")
