@@ -29,6 +29,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
     app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
+    app.setAttribute(Qt.AA_DisableWindowContextHelpButton, True)
 
     locale = cfg.get(cfg.language).value
     translator = FluentTranslator(locale)
@@ -46,28 +47,31 @@ if __name__ == "__main__":
     
     w = MainWindow(router)
 
-    def show_window():
-        w.show()
-        update()
+    def show_window(button):
+        if button == QSystemTrayIcon.Trigger:
+            w.show()
+            update()
+        else:
+            pass
 
     # Adding item on the menu bar
     tray = QSystemTrayIcon()
     tray.setIcon(icon)
     tray.setVisible(True)
-    tray.activated.connect(show_window)
+    tray.activated.connect(lambda reason: show_window(reason))
 
 
     # Creating the options
     menu = QMenu()
     open_action = QAction("Open")
-    open_action.triggered.connect(show_window)
+    open_action.triggered.connect(lambda: show_window(QSystemTrayIcon.Trigger))
     menu.addAction(open_action)
-    
+
     # To quit the app
     quit = QAction("Quit")
     quit.triggered.connect(app.quit)
     menu.addAction(quit)
-    
+
     # Adding options to the System Tray
     tray.setContextMenu(menu)
     

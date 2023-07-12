@@ -97,7 +97,7 @@ class MainWindow(FluentWindow):
         # add custom widget to bottom
         self.navigationInterface.addWidget(
             routeKey='avatar',
-            widget=NavigationAvatarWidget('Ladbaby', ':/gallery/images/shoko.png'),
+            widget=NavigationAvatarWidget('Ladbaby', ':/gallery/images/grey.jpg'),
             onClick=self.onSupport,
             position=NavigationItemPosition.BOTTOM
         )

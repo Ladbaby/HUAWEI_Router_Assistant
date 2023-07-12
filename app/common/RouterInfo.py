@@ -99,14 +99,14 @@ class Router_HW:
                 notification = Notify()
                 notification.title = "HUAWEI Mobile WiFi 3 Pro finished charging"
                 notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
-                notification.icon = 'app/resource/images/icons/battery_over_80.ico'
+                notification.icon = ':/gallery/images/icons/battery_over_80.ico'
                 notification.send(block=False)
             elif self.BatteryPercent < 30 and self.BatteryStatus == "0" and not self.if_already_notify:
                 self.if_already_notify = True 
                 notification = Notify()
                 notification.title = "HUAWEI Mobile WiFi 3 Pro need charging"
                 notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
-                notification.icon = 'app/resource/images/icons/battery_below_30.ico'
+                notification.icon = ':/gallery/images/icons/battery_below_30.ico'
                 notification.send(block=False)
 
             # process sim lock status
@@ -291,13 +291,13 @@ class Router_HW:
     def get_battery_icon_path(self):
         battery_percent = self.get_battery_percent()
         if battery_percent > 80:
-            return 'app/resource/images/icons/battery_over_80.ico'
+            return ':/gallery/images/icons/battery_over_80.ico'
         elif 50 < battery_percent <= 80:
-            return 'app/resource/images/icons/battery_50_to_80.ico'
+            return ':/gallery/images/icons/battery_50_to_80.ico'
         elif 30 < battery_percent <= 50:
-            return 'app/resource/images/icons/battery_30_to_50.ico'
+            return ':/gallery/images/icons/battery_30_to_50.ico'
         elif battery_percent <= 30:
-            return 'app/resource/images/icons/battery_below_30.ico'
+            return ':/gallery/images/icons/battery_below_30.ico'
 
     def get_traffic_statistics_dic(self):
         return self.traffic_statistics_dic
