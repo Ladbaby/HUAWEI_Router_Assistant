@@ -50,8 +50,8 @@ class TrafficStatisticsCard(QFrame):
         self.vBoxLayout.setAlignment(Qt.AlignVCenter)
 
         self.hBoxLayout.setAlignment(Qt.AlignVCenter)
-        self.hBoxLayout.addWidget(self.iconWidget)
-        self.hBoxLayout.addLayout(self.vBoxLayout)
+        self.hBoxLayout.addWidget(self.iconWidget, 1, Qt.AlignCenter)
+        self.hBoxLayout.addLayout(self.vBoxLayout, 2)
         self.vBoxLayout.addStretch(1)
         self.vBoxLayout.addWidget(self.title_label)
         self.vBoxLayout.addWidget(self.upload_label)

@@ -95,7 +95,7 @@ class BannerWidget(QWidget):
         if not isDarkTheme():
             painter.fillPath(path, QColor(206, 216, 228))
         else:
-            painter.fillPath(path, QColor(0, 0, 0))
+            painter.fillPath(path, QColor(39, 39, 39))
 
         # draw banner image
         pixmap = self.banner.scaled(

@@ -1,9 +1,9 @@
 # coding:utf-8
 from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtGui import QPixmap, QPainter, QColor, QBrush, QPainterPath
+from PyQt5.QtGui import QPixmap, QPainter, QColor, QBrush, QPainterPath, QImage
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
 
-from qfluentwidgets import ScrollArea, isDarkTheme, FluentIcon, SingleDirectionScrollArea
+from qfluentwidgets import ScrollArea, isDarkTheme, FluentIcon, SingleDirectionScrollArea, FlowLayout, PixmapLabel
 from ..common.config import cfg, HELP_URL, REPO_URL, EXAMPLE_URL, FEEDBACK_URL
 from ..common.icon import Icon, FluentIconBase
 from ..components.link_card import LinkCardView
@@ -18,11 +18,15 @@ class BannerCardView(SingleDirectionScrollArea):
     def __init__(self, parent=None):
         super().__init__(parent, Qt.Horizontal)
         self.view = QWidget(self)
-        self.hBoxLayout = QHBoxLayout(self.view)
+        self.flowLayout = FlowLayout(self.view)
 
-        self.hBoxLayout.setContentsMargins(36, 0, 0, 0)
-        self.hBoxLayout.setSpacing(12)
-        self.hBoxLayout.setAlignment(Qt.AlignLeft)
+        # self.flowLayout.setContentsMargins(36, 0, 0, 0)
+        # self.flowLayout.setSpacing(12)
+        # self.flowLayout.setAlignment(Qt.AlignLeft)
+
+        self.flowLayout.setContentsMargins(36, 12, 0, 0)
+        self.flowLayout.setHorizontalSpacing(12)
+        self.flowLayout.setVerticalSpacing(12)
 
         self.setWidget(self.view)
         self.setWidgetResizable(True)
@@ -35,21 +39,21 @@ class BannerCardView(SingleDirectionScrollArea):
     def addBatteryCard(self, ring_value, title, content):
         """ add link card """
         self.battery_card = BatteryCard(ring_value, title, content, self.view)
-        self.hBoxLayout.addWidget(self.battery_card, 0, Qt.AlignLeft)
+        self.flowLayout.addWidget(self.battery_card)
 
     def updateBatteryCard(self, ring_value, battery_status_str):
         self.battery_card.update_ring_value(ring_value, battery_status_str)
 
     def addTrafficStatisticsCard(self, traffic_statistics_dic):
         self.traffic_statistics_card = TrafficStatisticsCard(traffic_statistics_dic)
-        self.hBoxLayout.addWidget(self.traffic_statistics_card, 0, Qt.AlignLeft)
+        self.flowLayout.addWidget(self.traffic_statistics_card)
 
     def updateTrafficStatisticsCard(self, traffic_statistics_dic):
         self.traffic_statistics_card.update_traffic_statistics(traffic_statistics_dic)
 
     def addMonthStatisticsCard(self, month_statistics_dic):
         self.month_statistics_card = MonthStatisticsCard(month_statistics_dic)
-        self.hBoxLayout.addWidget(self.month_statistics_card, 0, Qt.AlignLeft)
+        self.flowLayout.addWidget(self.month_statistics_card)
 
     def updateMonthStatisticsCard(self, month_statistics_dic):
         self.traffic_statistics_card.update_month_statistics(month_statistics_dic)
@@ -60,20 +64,62 @@ class BannerWidget(QWidget):
     def __init__(self, router, parent=None):
         super().__init__(parent=parent)
         self.router = router
-        self.setFixedHeight(336)
-        # self.setFixedHeight(600)
+        # self.setFixedHeight(336)
+        self.setFixedHeight(600)
 
         self.vBoxLayout = QVBoxLayout(self)
         self.galleryLabel = QLabel('HUAWEI Mobile WiFi 3 Pro', self)
-        self.banner = QPixmap(':/gallery/images/header1.png')
+        self.banner = QPixmap(':/gallery/images/background.jpg')
         self.bannerCardView = BannerCardView(self)
+
+        dpi = 300  # Set your desired DPI value
+        self.model_image = QImage(':/gallery/images/mobile_wifi3_pro_cover.png')
+        # Scale the image
+        scaled_image = self.model_image.scaled(
+            120, 120, transformMode=Qt.SmoothTransformation, aspectRatioMode=Qt.KeepAspectRatioByExpanding
+        )
+        # Create a new QImage with higher DPI
+        new_image = QImage(scaled_image.size(), QImage.Format_ARGB32)
+        # new_image.setDevicePixelRatio(2.0)
+        new_image.fill(Qt.transparent)
+        new_image.setDotsPerMeterX(dpi / 0.0254)
+        new_image.setDotsPerMeterY(dpi / 0.0254)
+
+        # Draw the scaled image onto the new image
+        painter = QPainter(new_image)
+        # painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.drawImage(QRectF(0, 0, scaled_image.width(), scaled_image.height()), scaled_image)
+        painter.end()
+
+        # Use the new image
+        self.model_image = new_image
+
+
+        # print(self.model_image.devicePixelRatio())
+        # print(self.model_image.logicalDpiX())
+        # print(self.model_image.physicalDpiX())
+
+        self.model_pixmap = QPixmap.fromImage(self.model_image)
+        self.model_pixmap = self.model_pixmap.scaled(120, 120, transformMode=Qt.SmoothTransformation, aspectRatioMode=Qt.KeepAspectRatioByExpanding)
+
+        # print(self.model_pixmap.devicePixelRatio())
+        # print(self.model_pixmap.logicalDpiX())
+        # print(self.model_pixmap.physicalDpiX())
+        self.model_label = PixmapLabel(self)
+        self.model_label.setPixmap(self.model_pixmap)
+        # print(self.model_label.devicePixelRatio())
+        # print(self.model_label.logicalDpiX())
+        # print(self.model_label.physicalDpiX())
 
         self.galleryLabel.setObjectName('galleryLabel')
 
         self.vBoxLayout.setSpacing(0)
         self.vBoxLayout.setContentsMargins(0, 20, 0, 0)
+        self.vBoxLayout.addSpacing(30)
         self.vBoxLayout.addWidget(self.galleryLabel)
-        self.vBoxLayout.addWidget(self.bannerCardView, 1, Qt.AlignBottom)
+        self.vBoxLayout.addSpacing(30)
+        self.vBoxLayout.addWidget(self.model_label, 0, Qt.AlignCenter)
+        self.vBoxLayout.addWidget(self.bannerCardView, 0, Qt.AlignTop)
         self.vBoxLayout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
         # No.0
@@ -118,11 +164,11 @@ class BannerWidget(QWidget):
         if not isDarkTheme():
             painter.fillPath(path, QColor(206, 216, 228))
         else:
-            painter.fillPath(path, QColor(0, 0, 0))
+            painter.fillPath(path, QColor(39, 39, 39))
 
         # draw banner image
         pixmap = self.banner.scaled(
-            self.size(), transformMode=Qt.SmoothTransformation)
+            self.size(), transformMode=Qt.SmoothTransformation, aspectRatioMode=Qt.KeepAspectRatioByExpanding)
         path.addRect(QRectF(0, h, w, self.height() - h))
         painter.fillPath(path, QBrush(pixmap))
 
@@ -138,7 +184,7 @@ class HomeInterface(ScrollArea):
         self.vBoxLayout = QVBoxLayout(self.view)
 
         self.__initWidget()
-        self.loadSamples()
+        # self.loadSamples()
 
     def update_monitoring_status(self):
         self.banner.update_monitoring_status()

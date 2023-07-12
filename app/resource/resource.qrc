@@ -123,6 +123,8 @@
         <file>images/logo.png</file>
         <file>images/shoko.png</file>
         <file>images/Gyro.jpg</file>
+        <file>images/mobile_wifi3_pro_cover.png</file>
+        <file>images/background.jpg</file>
 
         <file>qss/dark/gallery_interface.qss</file>
         <file>qss/dark/home_interface.qss</file>

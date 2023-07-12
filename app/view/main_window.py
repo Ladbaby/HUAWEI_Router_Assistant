@@ -60,6 +60,7 @@ class MainWindow(FluentWindow):
         self.initNavigation()
 
         self.initWindow()
+        self.homeInterface.banner.setFixedHeight(self.height())
 
     def update_monitoring_status(self):
         self.homeInterface.update_monitoring_status()

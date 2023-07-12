@@ -29,8 +29,8 @@ class BatteryCard(QFrame):
         self.vBoxLayout.setAlignment(Qt.AlignVCenter)
 
         self.hBoxLayout.setAlignment(Qt.AlignVCenter)
-        self.hBoxLayout.addWidget(self.progressRing)
-        self.hBoxLayout.addLayout(self.vBoxLayout)
+        self.hBoxLayout.addWidget(self.progressRing, 1, Qt.AlignCenter)
+        self.hBoxLayout.addLayout(self.vBoxLayout, 2)
         self.vBoxLayout.addStretch(1)
         self.vBoxLayout.addWidget(self.titleLabel)
         self.vBoxLayout.addWidget(self.contentLabel)
