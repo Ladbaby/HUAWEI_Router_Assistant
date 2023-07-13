@@ -8,7 +8,7 @@ import sys
 from PyQt5.QtCore import Qt, QTranslator, QTimer, QTime
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction
-from qfluentwidgets import FluentTranslator
+from qfluentwidgets import FluentTranslator, DWMMenu
 
 from app.common.config import cfg
 from app.view.main_window import MainWindow
@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
 
     # Creating the options
-    menu = QMenu()
+    menu = DWMMenu()
     open_action = QAction("Open")
     open_action.triggered.connect(lambda: show_window(QSystemTrayIcon.Trigger))
     menu.addAction(open_action)
