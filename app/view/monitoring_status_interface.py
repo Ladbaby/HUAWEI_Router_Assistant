@@ -11,6 +11,7 @@ from ..components.sample_card import SampleCardView
 from ..common.style_sheet import StyleSheet
 from ..components.battery_card import BatteryCard
 from ..components.monitoring_status_card import MonitoringStatusCard
+from ..components.backdrop import Backdrop
 
 class BannerCardView(SingleDirectionScrollArea):
 
@@ -57,6 +58,9 @@ class BannerWidget(QWidget):
         self.banner = QPixmap(':/gallery/images/header1.png')
         self.bannerCardView = BannerCardView(self)
 
+        self.bannerCardView.setObjectName('bannerWidget')
+        self.setStyleSheet("#bannerWidget{background-color: red;}")
+
         self.galleryLabel.setObjectName('galleryLabel')
 
         self.vBoxLayout.setSpacing(0)
@@ -75,33 +79,6 @@ class BannerWidget(QWidget):
     def update_monitoring_status(self):
         self.bannerCardView.updateMonitoringStatus(self.router.get_monitoring_status_dic())
 
-    def paintEvent(self, e):
-        super().paintEvent(e)
-        painter = QPainter(self)
-        painter.setRenderHints(
-            QPainter.SmoothPixmapTransform | QPainter.Antialiasing)
-        painter.setPen(Qt.NoPen)
-
-        path = QPainterPath()
-        path.setFillRule(Qt.WindingFill)
-        w, h = self.width(), 200
-        path.addRoundedRect(QRectF(0, 0, w, h), 10, 10)
-        path.addRect(QRectF(0, h-50, 50, 50))
-        path.addRect(QRectF(w-50, 0, 50, 50))
-        path.addRect(QRectF(w-50, h-50, 50, 50))
-        path = path.simplified()
-
-        # draw background color
-        if not isDarkTheme():
-            painter.fillPath(path, QColor(206, 216, 228))
-        else:
-            painter.fillPath(path, QColor(39, 39, 39))
-
-        # draw banner image
-        pixmap = self.banner.scaled(
-            self.size(), transformMode=Qt.SmoothTransformation, aspectRatioMode=Qt.KeepAspectRatioByExpanding)
-        path.addRect(QRectF(0, h, w, self.height() - h))
-        painter.fillPath(path, QBrush(pixmap))
 
 
 class MonitoringStatusInterface(ScrollArea):
@@ -111,7 +88,7 @@ class MonitoringStatusInterface(ScrollArea):
         super().__init__(parent=parent)
         self.router = router
         self.banner = BannerWidget(router, self)
-        self.view = QWidget(self)
+        self.view = Backdrop(self)
         self.vBoxLayout = QVBoxLayout(self.view)
         # self.setMinimumHeight(1000)
 
@@ -126,7 +103,7 @@ class MonitoringStatusInterface(ScrollArea):
     def __initWidget(self):
         self.view.setObjectName('interface')
         self.setObjectName('monitoringStatusInterface')
-        self.banner.setObjectName("bannerWidget")
+        # self.banner.setObjectName("bannerWidget")
         # StyleSheet.HOME_INTERFACE.apply(self)
         StyleSheet.MONITORING_STATUS_CARD.apply(self)
 

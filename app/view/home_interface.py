@@ -12,6 +12,7 @@ from ..common.style_sheet import StyleSheet
 from ..components.battery_card import BatteryCard
 from ..components.traffic_statistics_card import TrafficStatisticsCard
 from ..components.month_statistics_card import MonthStatisticsCard
+from ..components.backdrop import Backdrop
 
 class BannerCardView(SingleDirectionScrollArea):
 
@@ -113,8 +114,8 @@ class BannerWidget(QWidget):
         self.galleryLabel.setObjectName('galleryLabel')
 
         self.vBoxLayout.setSpacing(0)
-        self.vBoxLayout.setContentsMargins(0, 20, 0, 0)
-        self.vBoxLayout.addSpacing(30)
+        self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
+        # self.vBoxLayout.addSpacing(30)
         self.vBoxLayout.addWidget(self.galleryLabel)
         self.vBoxLayout.addSpacing(30)
         self.vBoxLayout.addWidget(self.model_label, 0, Qt.AlignCenter)
@@ -144,41 +145,6 @@ class BannerWidget(QWidget):
         self.bannerCardView.updateTrafficStatisticsCard(self.router.get_traffic_statistics_dic())
 
 
-class Backdrop(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setObjectName('backdrop')
-        self.banner = QPixmap(':/gallery/images/background.jpg')
-
-    def paintEvent(self, e) -> None:
-        super().paintEvent(e)
-        painter = QPainter(self)
-        painter.setRenderHints(
-            QPainter.SmoothPixmapTransform | QPainter.Antialiasing)
-        painter.setPen(Qt.NoPen)
-
-        path = QPainterPath()
-        path.setFillRule(Qt.WindingFill)
-        w, h = self.width(), 200
-        path.addRoundedRect(QRectF(0, 0, w, h), 10, 10)
-        path.addRect(QRectF(0, h-50, 50, 50))
-        path.addRect(QRectF(w-50, 0, 50, 50))
-        path.addRect(QRectF(w-50, h-50, 50, 50))
-        path = path.simplified()
-
-        # draw background color
-        # if not isDarkTheme():
-        #     painter.fillPath(path, QColor(206, 216, 228))
-        # else:
-        #     # painter.fillPath(path, QColor(39, 39, 39))
-        #     painter.fillPath(path, QColor(255, 0, 0))
-            # painter.fillPath(path, Qt.transparent)
-
-        # draw banner image
-        pixmap = self.banner.scaled(
-            QSize(self.width(), self.height()), transformMode=Qt.SmoothTransformation, aspectRatioMode=Qt.KeepAspectRatioByExpanding)
-        path.addRect(QRectF(0, h, w, self.height() - h))
-        painter.fillPath(path, QBrush(pixmap))
 
 
 class HomeInterface(ScrollArea):

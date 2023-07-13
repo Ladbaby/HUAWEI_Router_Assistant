@@ -5,3 +5,4 @@ dist/*
 build/*
 *.xml
 *.spec
+*.ps1

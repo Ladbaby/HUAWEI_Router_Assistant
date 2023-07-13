@@ -6,6 +6,7 @@ import os
 
 
 from notifypy import Notify
+from .config import cfg
 
 class Router_HW:
     def __init__(
@@ -94,20 +95,23 @@ class Router_HW:
                 self.if_already_notify = False
                 self.previous_battery_status = self.BatteryStatus
 
-            if self.BatteryPercent > 80 and self.BatteryStatus == "1" and not self.if_already_notify:
-                self.if_already_notify = True 
-                notification = Notify()
-                notification.title = "HUAWEI Mobile WiFi 3 Pro finished charging"
-                notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
-                notification.icon = ':/gallery/images/icons/battery_over_80.ico'
-                notification.send(block=False)
-            elif self.BatteryPercent < 30 and self.BatteryStatus == "0" and not self.if_already_notify:
-                self.if_already_notify = True 
-                notification = Notify()
-                notification.title = "HUAWEI Mobile WiFi 3 Pro need charging"
-                notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
-                notification.icon = ':/gallery/images/icons/battery_below_30.ico'
-                notification.send(block=False)
+            if cfg.get(cfg.batteryUpperBoundNotification):
+                if self.BatteryPercent > cfg.get(cfg.batteryUpperBoundThreshold) and self.BatteryStatus == "1" and not self.if_already_notify:
+                    self.if_already_notify = True 
+                    notification = Notify()
+                    notification.title = "HUAWEI Mobile WiFi 3 Pro finished charging"
+                    notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
+                    notification.icon = 'app/resource/images/icons/battery_over_80.ico'
+                    notification.send(block=False)
+
+            if cfg.get(cfg.batteryLowerBoundNotification):
+                if self.BatteryPercent < cfg.get(cfg.batteryLowerBoundThreshold) and self.BatteryStatus == "0" and not self.if_already_notify:
+                    self.if_already_notify = True 
+                    notification = Notify()
+                    notification.title = "HUAWEI Mobile WiFi 3 Pro need charging"
+                    notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
+                    notification.icon = 'app/resource/images/icons/battery_below_30.ico'
+                    notification.send(block=False)
 
             # process sim lock status
             self.sim_lock_status_str = "Locked" if sim_lock_status == 1 else "Unlocked"

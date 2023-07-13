@@ -1,6 +1,12 @@
 {
+    "Battery": {
+        "batteryLowerBoundNotification": true,
+        "batteryLowerBoundThreshold": 30,
+        "batteryUpperBoundNotification": true,
+        "batteryUpperBoundThreshold": 80
+    },
     "Material": {
-        "AcrylicBlurRadius": 15
+        "AcrylicBlurRadius": 12
     },
     "Update": {
         "CheckUpdateAtStartUp": false

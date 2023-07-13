@@ -47,6 +47,14 @@ class Config(QConfig):
     # software update
     checkUpdateAtStartUp = ConfigItem("Update", "CheckUpdateAtStartUp", True, BoolValidator())
 
+    batteryUpperBoundNotification = ConfigItem("Battery", "batteryUpperBoundNotification", True, BoolValidator())
+
+    batteryUpperBoundThreshold = RangeConfigItem("Battery", "batteryUpperBoundThreshold", 80, RangeValidator(0, 100))
+
+    batteryLowerBoundNotification = ConfigItem("Battery", "batteryLowerBoundNotification", True, BoolValidator())
+
+    batteryLowerBoundThreshold = RangeConfigItem("Battery", "batteryLowerBoundThreshold", 30, RangeValidator(0, 100))
+
 
 YEAR = 2023
 AUTHOR = "ladbaby"

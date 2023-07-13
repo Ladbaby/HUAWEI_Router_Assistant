@@ -32,6 +32,37 @@ class SettingInterface(ScrollArea):
         # setting label
         self.settingLabel = QLabel(self.tr("Settings"), self)
 
+        self.batteryGroup = SettingCardGroup(
+            self.tr("Battery"), self.scrollWidget)
+        self.batteryUpperBoundNotificationSwitchCard = SwitchSettingCard(
+            FIF.INFO,
+            self.tr('Battery notification when charging over threshold'),
+            self.tr('Recommended for longer battery life'),
+            configItem=cfg.batteryUpperBoundNotification,
+            parent=self.batteryGroup
+        )
+        self.batteryUpperBoundThresholdCard = RangeSettingCard(
+            cfg.batteryUpperBoundThreshold,
+            FIF.CARE_UP_SOLID,
+            self.tr("Battery level's upper bound"),
+            self.tr("Battery level's upper bound"),
+            self.batteryGroup
+        )
+        self.batteryLowerBoundNotificationSwitchCard = SwitchSettingCard(
+            FIF.INFO,
+            self.tr('Battery notification when below threshold'),
+            self.tr('Prevent your device from shutting down unexpectedly'),
+            configItem=cfg.batteryLowerBoundNotification,
+            parent=self.batteryGroup
+        )
+        self.batteryLowerBoundThresholdCard = RangeSettingCard(
+            cfg.batteryLowerBoundThreshold,
+            FIF.CARE_DOWN_SOLID,
+            self.tr("Battery level's lower bound"),
+            self.tr("Battery level's lower bound"),
+            self.batteryGroup
+        )
+
         # music folders
         self.musicInThisPCGroup = SettingCardGroup(
             self.tr("Music on this PC"), self.scrollWidget)
@@ -162,6 +193,11 @@ class SettingInterface(ScrollArea):
     def __initLayout(self):
         self.settingLabel.move(36, 30)
 
+        self.batteryGroup.addSettingCard(self.batteryUpperBoundNotificationSwitchCard)
+        self.batteryGroup.addSettingCard(self.batteryUpperBoundThresholdCard)
+        self.batteryGroup.addSettingCard(self.batteryLowerBoundNotificationSwitchCard)
+        self.batteryGroup.addSettingCard(self.batteryLowerBoundThresholdCard)
+
         # add cards to group
         self.musicInThisPCGroup.addSettingCard(self.musicFolderCard)
         self.musicInThisPCGroup.addSettingCard(self.downloadFolderCard)
@@ -182,6 +218,7 @@ class SettingInterface(ScrollArea):
         # add setting card group to layout
         self.expandLayout.setSpacing(28)
         self.expandLayout.setContentsMargins(36, 10, 36, 0)
+        self.expandLayout.addWidget(self.batteryGroup)
         self.expandLayout.addWidget(self.musicInThisPCGroup)
         self.expandLayout.addWidget(self.personalGroup)
         self.expandLayout.addWidget(self.materialGroup)
