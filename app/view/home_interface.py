@@ -57,7 +57,7 @@ class BannerCardView(SingleDirectionScrollArea):
         self.flowLayout.addWidget(self.month_statistics_card)
 
     def updateMonthStatisticsCard(self, month_statistics_dic):
-        self.traffic_statistics_card.update_month_statistics(month_statistics_dic)
+        self.month_statistics_card.update_month_statistics(month_statistics_dic)
 
 class BannerWidget(QWidget):
     """ Banner widget """
@@ -144,6 +144,9 @@ class BannerWidget(QWidget):
     def update_traffic_statistics(self):
         self.bannerCardView.updateTrafficStatisticsCard(self.router.get_traffic_statistics_dic())
 
+    def update_month_statistics(self):
+        self.bannerCardView.updateMonthStatisticsCard(self.router.get_month_statistics_dic())
+
 
 
 
@@ -165,6 +168,9 @@ class HomeInterface(ScrollArea):
 
     def update_traffic_statistics(self):
         self.banner.update_traffic_statistics()
+    
+    def update_month_statistics(self):
+        self.banner.update_month_statistics()
 
     def __initWidget(self):
         self.view.setObjectName('view')

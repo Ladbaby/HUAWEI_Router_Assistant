@@ -41,7 +41,7 @@ class MonthStatisticsCard(QFrame):
         self.contentLabel.setObjectName('titleLabel')
 
     def update_month_statistics(self, month_statistics_dic):
-        self.progressBar.setValue(int(month_statistics_dic["Month Percentage"]))
+        self.progressBar.setValue(int(100 - month_statistics_dic["Month Percentage"]))
         self.contentLabel.setText(str(100 - month_statistics_dic["Month Percentage"]) + "%\n" + month_statistics_dic["Current Upload Download"] + " / " + month_statistics_dic['Traffic Max Limit'])
 
 

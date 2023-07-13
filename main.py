@@ -83,6 +83,7 @@ if __name__ == "__main__":
         tray.setIcon(icon)
         if w.isVisible():
             w.update_monitoring_status()
+            w.update_month_statistics()
 
     def update_traffic_statistics():
         if w.isVisible():

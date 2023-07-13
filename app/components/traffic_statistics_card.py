@@ -66,4 +66,6 @@ class TrafficStatisticsCard(QFrame):
         self.download_label.setText("↓: " + traffic_statistics_dic["Current Download Rate"])
         self.iconWidget.setIcon(":/gallery/images/icons/signal_" + str(traffic_statistics_dic["Signal Strength"]) + ".png")
 
+    
+
 

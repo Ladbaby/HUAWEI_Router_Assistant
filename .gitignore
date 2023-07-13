@@ -1,8 +1,9 @@
 __pycache__
 app/resource/images/*
-main.spec
 dist/*
 build/*
 *.xml
 *.spec
 *.ps1
+TODO.md
+test.py

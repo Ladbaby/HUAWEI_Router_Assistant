@@ -12,7 +12,7 @@ class Router_HW:
     def __init__(
         self, 
         login_admin_user = "admin", 
-        login_admin_password = "iamlocked",
+        login_admin_password = "password",
         router_ip = "192.168.8.1"
     ) -> None:
         os.environ['NO_PROXY'] = router_ip
