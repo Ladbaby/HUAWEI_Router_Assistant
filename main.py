@@ -12,10 +12,13 @@ from qfluentwidgets import FluentTranslator, DWMMenu
 
 from app.common.config import cfg
 from app.view.main_window import MainWindow
+from app.common.global_logger import logger
 
 
 
 if __name__ == "__main__":
+    if cfg.get(cfg.enableLogging):
+        logger.info("---HUAWEI Router Assistant started---")
     if cfg.get(cfg.dpiScale) == "Auto":
         QApplication.setHighDpiScaleFactorRoundingPolicy(
             Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)

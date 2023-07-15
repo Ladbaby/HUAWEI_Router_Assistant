@@ -19,6 +19,9 @@
         "DpiScale": "Auto",
         "Language": "en_US"
     },
+    "Developer": {
+        "enableLogging": false
+    },
     "QFluentWidgets": {
         "ThemeColor": "#ff009faa",
         "ThemeMode": "Dark"

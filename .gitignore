@@ -2,6 +2,8 @@ __pycache__
 app/resource/images/*
 dist/*
 build/*
+log/*
+debug/*
 *.xml
 *.spec
 *.ps1

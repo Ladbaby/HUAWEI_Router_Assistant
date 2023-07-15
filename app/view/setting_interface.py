@@ -144,6 +144,16 @@ class SettingInterface(ScrollArea):
             parent=self.updateSoftwareGroup
         )
 
+        # developer
+        self.developerGroup = SettingCardGroup(self.tr('Developer'), self.scrollWidget)
+        self.enableLoggingCard = SwitchSettingCard(
+            FIF.CODE,
+            self.tr('Enable logging'),
+            self.tr('log debug information'),
+            configItem=cfg.enableLogging,
+            parent=self.developerGroup
+        )
+
         # application
         self.aboutGroup = SettingCardGroup(self.tr('About'), self.scrollWidget)
         self.helpCard = HyperlinkCard(
@@ -215,6 +225,8 @@ class SettingInterface(ScrollArea):
         self.aboutGroup.addSettingCard(self.feedbackCard)
         self.aboutGroup.addSettingCard(self.aboutCard)
 
+        self.developerGroup.addSettingCard(self.enableLoggingCard)
+
         # add setting card group to layout
         self.expandLayout.setSpacing(28)
         self.expandLayout.setContentsMargins(36, 10, 36, 0)
@@ -223,6 +235,7 @@ class SettingInterface(ScrollArea):
         self.expandLayout.addWidget(self.personalGroup)
         self.expandLayout.addWidget(self.materialGroup)
         self.expandLayout.addWidget(self.updateSoftwareGroup)
+        self.expandLayout.addWidget(self.developerGroup)
         self.expandLayout.addWidget(self.aboutGroup)
 
     def __showRestartTooltip(self):

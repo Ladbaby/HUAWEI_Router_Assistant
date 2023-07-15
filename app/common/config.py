@@ -55,6 +55,7 @@ class Config(QConfig):
 
     batteryLowerBoundThreshold = RangeConfigItem("Battery", "batteryLowerBoundThreshold", 30, RangeValidator(0, 100))
 
+    enableLogging = ConfigItem("Developer", "enableLogging", False, BoolValidator())
 
 YEAR = 2023
 AUTHOR = "ladbaby"

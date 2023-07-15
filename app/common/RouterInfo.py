@@ -3,10 +3,11 @@ import xml.etree.ElementTree as ET
 import hashlib
 import base64
 import os
-
+import concurrent.futures
 
 from notifypy import Notify
 from .config import cfg
+from.global_logger import logger
 
 class Router_HW:
     def __init__(
@@ -15,6 +16,7 @@ class Router_HW:
         login_admin_password = "password",
         router_ip = "192.168.8.1"
     ) -> None:
+        os.makedirs('debug', exist_ok=True)
         os.environ['NO_PROXY'] = router_ip
         self.session_url = 'http://' + router_ip + '/api/webserver/SesTokInfo'
         self.status_url = 'http://' + router_ip + '/api/monitoring/status'
@@ -93,29 +95,56 @@ class Router_HW:
                 self.SesInfo = root.find('SesInfo').text
                 self.cookies['SessionID'] = self.SesInfo
 
-                admin_user_password_token = self.LOGIN_ADMIN_USER + self.LOGIN_ADMIN_PASSWORD_BASE64 + self.SesInfo
-                admin_user_password_token_sha256_hash = hashlib.sha256(admin_user_password_token.encode()).hexdigest()
-                self.admin_user_password_token_base64 = base64.b64encode(admin_user_password_token_sha256_hash.encode()).decode().rstrip('\n')
+                # admin_user_password_token = self.LOGIN_ADMIN_USER + self.LOGIN_ADMIN_PASSWORD_BASE64 + self.SesInfo
+                # admin_user_password_token_sha256_hash = hashlib.sha256(admin_user_password_token.encode()).hexdigest()
+                # self.admin_user_password_token_base64 = base64.b64encode(admin_user_password_token_sha256_hash.encode()).decode().rstrip('\n')
             else:
-                print("Request 'get_session_token' with status code:", response_session.status_code)
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    executor.submit(self.write_error_log, "Request 'get_session_token' failed with status code:" + response_session.status_code)
+                # if cfg.get(cfg.enableLogging):
+                #     logger.error("Request 'get_session_token' failed with status code:" + response_session.status_code)
 
         except:
-            pass
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                executor.submit(self.write_error_log, "`get_session_token` failed to reach router at " + self.session_url)
+            # if cfg.get(cfg.enableLogging):
+            #     logger.error("`get_session_token` failed to reach router at " + self.session_url)
+
+    def write_debug_xml(self, response, filename):
+        if cfg.get(cfg.enableLogging):
+            with open('debug/' + filename + '.xml', 'w') as f:
+                f.write(response.text)
+
+    def write_error_log(self, error_message):
+        if cfg.get(cfg.enableLogging):
+            logger.error(error_message)
+
+    def write_warning_log(self, warning_message):
+        if cfg.get(cfg.enableLogging):
+            logger.warning(warning_message)
 
     def get_status(self):
         self.get_session_token()
         try:
             response_status = requests.get(self.status_url, headers=self.headers, timeout=60, verify=False, cookies=self.cookies)
             if response_status.status_code == 200:
-                # with open('status.xml', 'w') as f:
-                #     f.write(response_status.text)
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    executor.submit(self.write_debug_xml, response_status, "status")
+                    # if cfg.get(cfg.enableLogging):
+                    #     with open('debug/status.xml', 'w') as f:
+                    #         f.write(response_status.text)
                 root = ET.fromstring(response_status.text)
 
-                # for key in root.iter():
-                #     print(key.tag, key.text)
-                self.BatteryStatus = root.find('BatteryStatus').text
-                self.BatteryStatusStr = "Charging" if self.BatteryStatus == "1" else "Not Charging"
-                self.BatteryPercent = int(root.find('BatteryPercent').text)
+                try:
+                    self.BatteryStatus = root.find('BatteryStatus').text
+                    self.BatteryStatusStr = "Charging" if self.BatteryStatus == "1" else "Not Charging"
+                    self.BatteryPercent = int(root.find('BatteryPercent').text)
+                except:
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                        executor.submit(self.write_warning_log, "`get_status` failed to find battery information")
+                    # logger.warning("`get_status` failed to find battery information")
+                    self.BatteryStatusStr = "No battery"
+                    self.BatteryPercent = 100
 
                 sim_lock_status = int(root.find('simlockStatus').text)
                 wifi_connection_status = int(root.find('WifiConnectionStatus').text)
@@ -233,11 +262,21 @@ class Router_HW:
                 self.get_month_statistics()
                 self.get_start_date()
 
-                self.month_statistics_dic["Month Percentage"] = round(self.monitoring_status_dic["Current Upload Download Raw"] / self.monitoring_status_dic["Traffic Max Limit Raw"] * 100, 2)
+                if self.monitoring_status_dic["Traffic Max Limit Raw"] != 0:
+                    self.month_statistics_dic["Month Percentage"] = round(self.monitoring_status_dic["Current Upload Download Raw"] / self.monitoring_status_dic["Traffic Max Limit Raw"] * 100, 2)
+                else:
+                    self.month_statistics_dic["Month Percentage"] = 0
 
             else:
-                print("Request 'get_status' failed with status code:", response_status.status_code)
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    executor.submit(self.write_error_log, "Request 'get_status' failed with status code:" + response_status.status_code)
+                # if cfg.get(cfg.enableLogging):
+                #     logger.error("Request 'get_status' failed with status code:" + response_status.status_code)
         except:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                executor.submit(self.write_error_log, "Request 'get_status' failed to reach router at " + self.session_url)
+            # if cfg.get(cfg.enableLogging):
+            #     logger.error("`get_status` failed to reach router at " + self.session_url)
             self.monitoring_status_dic["Battery Percent"] = 0
             self.monitoring_status_dic["Sim Lock Status"] = "-"
             self.monitoring_status_dic["Wifi Connection Status"] = "-"
@@ -254,7 +293,10 @@ class Router_HW:
             self.traffic_statistics_dic["Signal Strength"] = 0
             self.traffic_statistics_dic["Network Type"] = "Device offline"
 
-            self.month_statistics_dic["Month Percentage"] = 0
+            if self.monitoring_status_dic["Traffic Max Limit Raw"] != 0:
+                self.month_statistics_dic["Month Percentage"] = round(self.monitoring_status_dic["Current Upload Download Raw"] / self.monitoring_status_dic["Traffic Max Limit Raw"] * 100, 2)
+            else:
+                self.month_statistics_dic["Month Percentage"] = 0
             pass
 
     def get_traffic_statistics(self):
@@ -262,8 +304,11 @@ class Router_HW:
         try:
             response_status = requests.get(self.traffic_statistics_url, headers=self.headers, timeout=60, verify=False, cookies=self.cookies)
             if response_status.status_code == 200:
-                # with open('traffic_statistics.xml', 'w') as f:
-                #     f.write(response_status.text)
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    executor.submit(self.write_debug_xml, response_status, "traffic_statistics")
+                # if cfg.get(cfg.enableLogging):
+                #     with open('debug/traffic_statistics.xml', 'w') as f:
+                #         f.write(response_status.text)
                 root = ET.fromstring(response_status.text)
 
                 current_connect_time = self.calc_time(root.find('CurrentConnectTime').text)
@@ -280,8 +325,15 @@ class Router_HW:
                 self.traffic_statistics_dic["Current Connect Time"] = current_connect_time
                 self.traffic_statistics_dic["Total Connect Time"] = total_connect_time
             else:
-                print("Request 'get_traffic_statistics' failed with status code:", response_status.status_code)
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    executor.submit(self.write_error_log, "Request 'get_traffic_statistics' failed with status code:" + response_status.status_code)
+                # if cfg.get(cfg.enableLogging):
+                #     logger.error("Request 'get_traffic_statistics' failed with status code:" + response_status.status_code)
         except:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                executor.submit(self.write_error_log, "Request 'get_traffic_statistics' failed to reach router at " + self.session_url)
+            # if cfg.get(cfg.enableLogging):
+            #     logger.error("`get_traffic_statistics` failed to reach router at " + self.session_url)
             self.traffic_statistics_dic["Current Download Rate"] = "-"
             self.traffic_statistics_dic["Current Upload Rate"] = "-"
             self.traffic_statistics_dic["Total Upload"] = "-"
@@ -296,8 +348,11 @@ class Router_HW:
                 self.month_statistics_url, headers=self.headers, timeout=60, verify=False, cookies=self.cookies
             )
             if response_status.status_code == 200:
-                # with open('month_statistics.xml', 'w') as f:
-                #     f.write(response_status.text)
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    executor.submit(self.write_debug_xml, response_status, "month_statistics")
+                # if cfg.get(cfg.enableLogging):
+                #     with open('debug/month_statistics.xml', 'w') as f:
+                #         f.write(response_status.text)
                 root = ET.fromstring(response_status.text)
 
                 current_month_download = self.calc_traffic(root.find('CurrentMonthDownload').text)
@@ -318,6 +373,10 @@ class Router_HW:
                 self.monitoring_status_dic["Current Day Used"] = current_day_used
                 self.monitoring_status_dic["Current Day Duration"] = current_day_duration
         except:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                executor.submit(self.write_error_log, "Request 'get_month_statistics' failed to reach router at " + self.session_url)
+            # if cfg.get(cfg.enableLogging):
+            #     logger.error("`get_month_statistics` failed to reach router at " + self.session_url)
             self.monitoring_status_dic["Current Month Download"] = "-"
             self.monitoring_status_dic["Current Month Upload"] = "-"
             self.monitoring_status_dic["Current Upload Download Raw"] = 0
@@ -334,8 +393,11 @@ class Router_HW:
                 self.start_date_url, headers=self.headers, timeout=60, verify=False, cookies=self.cookies
             )
             if response_status.status_code == 200:
-                # with open('start_date.xml', 'w') as f:
-                #     f.write(response_status.text)
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    executor.submit(self.write_debug_xml, response_status, "start_date")
+                # if cfg.get(cfg.enableLogging):
+                #     with open('debug/start_date.xml', 'w') as f:
+                #         f.write(response_status.text)
                 root = ET.fromstring(response_status.text)
 
                 data_limit = root.find('DataLimit').text
@@ -347,6 +409,10 @@ class Router_HW:
                 self.monitoring_status_dic["Traffic Max Limit Raw"] = traffic_max_limit_raw
                 self.month_statistics_dic["Current Upload Download"] = self.calc_traffic(self.monitoring_status_dic["Traffic Max Limit Raw"] - self.monitoring_status_dic["Current Upload Download Raw"])
         except:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                executor.submit(self.write_error_log, "Request 'get_start_date' failed to reach router at " + self.session_url)
+            # if cfg.get(cfg.enableLogging):
+            #     logger.error("`get_start_date` failed to reach router at " + self.session_url)
             self.monitoring_status_dic["Data Limit"] = "-"
             self.month_statistics_dic["Traffic Max Limit"] = "-"
             self.monitoring_status_dic["Traffic Max Limit Raw"] = 0

@@ -27,9 +27,9 @@ A simple and badly-written program to display basic information of your HUAWEI M
     - Current Day Duration
     - Data Limit
 
-## Implementation
+## How it works
 
-The program post http request to get information from the router and parse the result.
+The program posts http request to get information from the router and parse the result.
 
 Currently, the program is unable to perform password authentication due to lack of knowledge on the detailed secure mechanism. Thus, it can only get some of the result that do not require such authentication.
 
