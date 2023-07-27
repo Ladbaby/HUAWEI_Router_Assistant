@@ -12,7 +12,7 @@
         "CheckUpdateAtStartUp": false
     },
     "Folders": {
-        "Download": "C:/Users/Firefly/Apps/E/VS_Code/VS_Code_Python/Useful_Tools/RouterInfo/app/download",
+        "Download": "./",
         "LocalMusic": []
     },
     "MainWindow": {

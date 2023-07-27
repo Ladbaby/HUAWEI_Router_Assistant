@@ -82,8 +82,8 @@ class BannerWidget(QWidget):
         new_image = QImage(scaled_image.size(), QImage.Format_ARGB32)
         # new_image.setDevicePixelRatio(2.0)
         new_image.fill(Qt.transparent)
-        new_image.setDotsPerMeterX(dpi / 0.0254)
-        new_image.setDotsPerMeterY(dpi / 0.0254)
+        new_image.setDotsPerMeterX(int(dpi / 0.0254))
+        new_image.setDotsPerMeterY(int(dpi / 0.0254))
 
         # Draw the scaled image onto the new image
         painter = QPainter(new_image)
