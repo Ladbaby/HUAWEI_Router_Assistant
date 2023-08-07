@@ -82,7 +82,7 @@ class Router_HW:
 
     def get_session_token(self):
         try:
-            response_session = requests.get(self.session_url, headers=self.headers, timeout=0.1, verify=False)
+            response_session = requests.get(self.session_url, headers=self.headers, timeout=0.5, verify=False)
 
             if response_session.status_code == 200:
                 # print(response.text)
@@ -126,7 +126,7 @@ class Router_HW:
     def get_status(self):
         self.get_session_token()
         try:
-            response_status = requests.get(self.status_url, headers=self.headers, timeout=0.1, verify=False, cookies=self.cookies)
+            response_status = requests.get(self.status_url, headers=self.headers, timeout=0.5, verify=False, cookies=self.cookies)
             if response_status.status_code == 200:
                 with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                     executor.submit(self.write_debug_xml, response_status, "status")
@@ -136,9 +136,9 @@ class Router_HW:
                 root = ET.fromstring(response_status.text)
 
                 try:
-                    self.BatteryStatus = root.find('BatteryStatus').text
+                    self.BatteryStatus = "0" if root.find('BatteryStatus') == None else root.find('BatteryStatus').text
                     self.BatteryStatusStr = "Charging" if self.BatteryStatus == "1" else "Not Charging"
-                    self.BatteryPercent = int(root.find('BatteryPercent').text)
+                    self.BatteryPercent = 0 if root.find('BatteryPercent') == None else int(root.find('BatteryPercent').text)
 
                     # process battery status
                     if self.previous_battery_status != self.BatteryStatus:
@@ -303,7 +303,7 @@ class Router_HW:
     def get_traffic_statistics(self):
         self.get_session_token()
         try:
-            response_status = requests.get(self.traffic_statistics_url, headers=self.headers, timeout=0.1, verify=False, cookies=self.cookies)
+            response_status = requests.get(self.traffic_statistics_url, headers=self.headers, timeout=0.5, verify=False, cookies=self.cookies)
             if response_status.status_code == 200:
                 with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                     executor.submit(self.write_debug_xml, response_status, "traffic_statistics")
@@ -346,7 +346,7 @@ class Router_HW:
         self.get_session_token()
         try:
             response_status = requests.get(
-                self.month_statistics_url, headers=self.headers, timeout=0.1, verify=False, cookies=self.cookies
+                self.month_statistics_url, headers=self.headers, timeout=0.5, verify=False, cookies=self.cookies
             )
             if response_status.status_code == 200:
                 with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
@@ -391,7 +391,7 @@ class Router_HW:
         self.get_session_token()
         try:
             response_status = requests.get(
-                self.start_date_url, headers=self.headers, timeout=0.1, verify=False, cookies=self.cookies
+                self.start_date_url, headers=self.headers, timeout=0.5, verify=False, cookies=self.cookies
             )
             if response_status.status_code == 200:
                 with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:

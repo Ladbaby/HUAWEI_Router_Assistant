@@ -1,4 +1,5 @@
 # coding:utf-8
+from asyncio.log import logger
 from PyQt5.QtCore import Qt, QRectF, QSize
 from PyQt5.QtGui import QPixmap, QPainter, QColor, QBrush, QPainterPath, QImage, QPalette
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QGraphicsBlurEffect
@@ -69,11 +70,18 @@ class BannerWidget(QWidget):
         self.setFixedHeight(600)
 
         self.vBoxLayout = QVBoxLayout(self)
-        self.galleryLabel = QLabel('HUAWEI Mobile WiFi 3 Pro', self)
+        deviceName = cfg.get(cfg.deviceName).value
+        self.galleryLabel = QLabel(deviceName, self)
         self.bannerCardView = BannerCardView(self)
 
         dpi = 300  # Set your desired DPI value
-        self.model_image = QImage(':/gallery/images/mobile_wifi3_pro_cover.png')
+        if deviceName == 'HUAWEI Mobile WiFi':
+            self.model_image = QImage(':/gallery/images/mobile_wifi3_pro_cover.png')
+        elif deviceName == "HUAWEI Mobile Router":
+            self.model_image = QImage(':/gallery/images/mobile_router.png')
+        else:
+            logger.error(f"Unknown device name: {deviceName}")
+            exit(1)
         # Scale the image
         scaled_image = self.model_image.scaled(
             120, 120, transformMode=Qt.SmoothTransformation, aspectRatioMode=Qt.KeepAspectRatioByExpanding

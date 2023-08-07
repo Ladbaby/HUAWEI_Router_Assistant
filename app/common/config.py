@@ -15,6 +15,10 @@ class Language(Enum):
     ENGLISH = QLocale(QLocale.English)
     AUTO = QLocale()
 
+class DeviceName(Enum):
+    WIFI = "HUAWEI Mobile WiFi"
+    ROUTER = "HUAWEI Mobile Router"
+
 
 class LanguageSerializer(ConfigSerializer):
     """ Language serializer """
@@ -54,6 +58,10 @@ class Config(QConfig):
     batteryLowerBoundNotification = ConfigItem("Battery", "batteryLowerBoundNotification", True, BoolValidator())
 
     batteryLowerBoundThreshold = RangeConfigItem("Battery", "batteryLowerBoundThreshold", 30, RangeValidator(0, 100))
+
+    deviceName = OptionsConfigItem("Device", "deviceName", DeviceName.WIFI, OptionsValidator(DeviceName), EnumSerializer(DeviceName))
+    # themeMode = OptionsConfigItem(
+    #     "QFluentWidgets", "ThemeMode", Theme.AUTO, OptionsValidator(Theme), EnumSerializer(Theme))
 
     enableLogging = ConfigItem("Developer", "enableLogging", False, BoolValidator())
 
