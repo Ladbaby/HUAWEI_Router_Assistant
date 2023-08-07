@@ -1,10 +1,11 @@
 import logging
 import logging.handlers as handlers
+import coloredlogs
 import time
 import os
 
 logger = logging.getLogger('global')
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
 
 os.makedirs('log', exist_ok=True)
 
@@ -13,3 +14,4 @@ logHandler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s|%(levelname)s:%(message)s')
 logHandler.setFormatter(formatter)
 logger.addHandler(logHandler)
+coloredlogs.install(level="DEBUG", logger=logger)
