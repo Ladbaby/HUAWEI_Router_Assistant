@@ -4,6 +4,7 @@ dist/*
 build/*
 log/*
 debug/*
+.vscode/*
 *.xml
 *.spec
 *.ps1
