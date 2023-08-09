@@ -63,6 +63,19 @@ class SettingInterface(ScrollArea):
             self.batteryGroup
         )
 
+        self.deviceGroup = SettingCardGroup(
+            self.tr("Device"), self.scrollWidget)
+        self.deviceNameCard = OptionsSettingCard(
+            cfg.deviceName,
+            FIF.EDIT,
+            self.tr('Device Name'),
+            self.tr("Restart to take effect"),
+            texts=[
+                self.tr('HUAWEI Mobile WiFi'), self.tr('HUAWEI Mobile Router')
+            ],
+            parent=self.deviceGroup
+        )
+
         # music folders
         self.musicInThisPCGroup = SettingCardGroup(
             self.tr("Music on this PC"), self.scrollWidget)
@@ -208,6 +221,8 @@ class SettingInterface(ScrollArea):
         self.batteryGroup.addSettingCard(self.batteryLowerBoundNotificationSwitchCard)
         self.batteryGroup.addSettingCard(self.batteryLowerBoundThresholdCard)
 
+        self.deviceGroup.addSettingCard(self.deviceNameCard)
+
         # add cards to group
         self.musicInThisPCGroup.addSettingCard(self.musicFolderCard)
         self.musicInThisPCGroup.addSettingCard(self.downloadFolderCard)
@@ -231,6 +246,7 @@ class SettingInterface(ScrollArea):
         self.expandLayout.setSpacing(28)
         self.expandLayout.setContentsMargins(36, 10, 36, 0)
         self.expandLayout.addWidget(self.batteryGroup)
+        self.expandLayout.addWidget(self.deviceGroup)
         self.expandLayout.addWidget(self.musicInThisPCGroup)
         self.expandLayout.addWidget(self.personalGroup)
         self.expandLayout.addWidget(self.materialGroup)

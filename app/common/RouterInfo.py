@@ -40,7 +40,7 @@ class Router_HW:
         self.monitoring_status_dic = {
             "Battery Percent": 0,
             "Sim Lock Status": "-",
-            "Wifi Connection Status": "-",
+            # "Wifi Connection Status": "-",
             "Signal Strength": "-",
             "Connection Status": "-",
             "Network Type": "Device offline",
@@ -136,9 +136,32 @@ class Router_HW:
                 root = ET.fromstring(response_status.text)
 
                 try:
-                    self.BatteryStatus = root.find('BatteryStatus').text
+                    self.BatteryStatus = "0" if root.find('BatteryStatus') == None else root.find('BatteryStatus').text
                     self.BatteryStatusStr = "Charging" if self.BatteryStatus == "1" else "Not Charging"
-                    self.BatteryPercent = int(root.find('BatteryPercent').text)
+                    self.BatteryPercent = 0 if root.find('BatteryPercent') == None else int(root.find('BatteryPercent').text)
+
+                    # process battery status
+                    if self.previous_battery_status != self.BatteryStatus:
+                        self.if_already_notify = False
+                        self.previous_battery_status = self.BatteryStatus
+
+                    if cfg.get(cfg.batteryUpperBoundNotification):
+                        if self.BatteryPercent > cfg.get(cfg.batteryUpperBoundThreshold) and self.BatteryStatus == "1" and not self.if_already_notify:
+                            self.if_already_notify = True 
+                            notification = Notify()
+                            notification.title = "HUAWEI Mobile WiFi 3 Pro finished charging"
+                            notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
+                            notification.icon = 'app/resource/images/icons/battery_over_80.ico'
+                            notification.send(block=False)
+
+                    if cfg.get(cfg.batteryLowerBoundNotification):
+                        if self.BatteryPercent < cfg.get(cfg.batteryLowerBoundThreshold) and self.BatteryStatus == "0" and not self.if_already_notify:
+                            self.if_already_notify = True 
+                            notification = Notify()
+                            notification.title = "HUAWEI Mobile WiFi 3 Pro need charging"
+                            notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
+                            notification.icon = 'app/resource/images/icons/battery_below_30.ico'
+                            notification.send(block=False)
                 except:
                     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                         executor.submit(self.write_warning_log, "`get_status` failed to find battery information")
@@ -147,7 +170,7 @@ class Router_HW:
                     self.BatteryPercent = 100
 
                 sim_lock_status = int(root.find('simlockStatus').text)
-                wifi_connection_status = int(root.find('WifiConnectionStatus').text)
+                # wifi_connection_status = int(root.find('WifiConnectionStatus').text)
 
                 self.current_wifi_user = int(root.find('CurrentWifiUser').text)
 
@@ -163,28 +186,6 @@ class Router_HW:
                 primary_ipv6_dns = root.find('PrimaryIPv6Dns').text
                 secondary_ipv6_dns = root.find('SecondaryIPv6Dns').text
 
-                # process battery status
-                if self.previous_battery_status != self.BatteryStatus:
-                    self.if_already_notify = False
-                    self.previous_battery_status = self.BatteryStatus
-
-                if cfg.get(cfg.batteryUpperBoundNotification):
-                    if self.BatteryPercent > cfg.get(cfg.batteryUpperBoundThreshold) and self.BatteryStatus == "1" and not self.if_already_notify:
-                        self.if_already_notify = True 
-                        notification = Notify()
-                        notification.title = "HUAWEI Mobile WiFi 3 Pro finished charging"
-                        notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
-                        notification.icon = 'app/resource/images/icons/battery_over_80.ico'
-                        notification.send(block=False)
-
-                if cfg.get(cfg.batteryLowerBoundNotification):
-                    if self.BatteryPercent < cfg.get(cfg.batteryLowerBoundThreshold) and self.BatteryStatus == "0" and not self.if_already_notify:
-                        self.if_already_notify = True 
-                        notification = Notify()
-                        notification.title = "HUAWEI Mobile WiFi 3 Pro need charging"
-                        notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
-                        notification.icon = 'app/resource/images/icons/battery_below_30.ico'
-                        notification.send(block=False)
 
                 # process sim lock status
                 self.sim_lock_status_str = "Locked" if sim_lock_status == 1 else "Unlocked"
@@ -204,7 +205,7 @@ class Router_HW:
                     903: "Disconnecting",
                     904: "Connection failed or disabled"
                 }
-                self.wifi_connection_status_str = self.wifi_connection_status_dic[wifi_connection_status] if wifi_connection_status in self.wifi_connection_status_dic.keys() else "Connection failed, the profile is invalid"
+                # self.wifi_connection_status_str = self.wifi_connection_status_dic[wifi_connection_status] if wifi_connection_status in self.wifi_connection_status_dic.keys() else "Connection failed, the profile is invalid"
 
                 # process connection status
                 self.connection_status_str = self.wifi_connection_status_dic[connection_status] if connection_status in self.wifi_connection_status_dic.keys() else "Connection failed, the profile is invalid"
@@ -244,7 +245,7 @@ class Router_HW:
                 # update monitoring status dic
                 self.monitoring_status_dic["Battery Percent"] = self.BatteryPercent
                 self.monitoring_status_dic["Sim Lock Status"] = self.sim_lock_status_str
-                self.monitoring_status_dic["Wifi Connection Status"] = self.wifi_connection_status_str
+                # self.monitoring_status_dic["Wifi Connection Status"] = self.wifi_connection_status_str
                 self.monitoring_status_dic["Connection Status"] = self.connection_status_str
                 self.monitoring_status_dic["Network Type"] = self.network_type_str
                 self.monitoring_status_dic["Signal Strength"] = self.signal_strength
@@ -279,7 +280,7 @@ class Router_HW:
             #     logger.error("`get_status` failed to reach router at " + self.session_url)
             self.monitoring_status_dic["Battery Percent"] = 0
             self.monitoring_status_dic["Sim Lock Status"] = "-"
-            self.monitoring_status_dic["Wifi Connection Status"] = "-"
+            # self.monitoring_status_dic["Wifi Connection Status"] = "-"
             self.monitoring_status_dic["Connection Status"] = "-"
             self.monitoring_status_dic["Network Type"] = "Device offline"
             self.monitoring_status_dic["Signal Strength"] = 0

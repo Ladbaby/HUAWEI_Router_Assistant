@@ -6,13 +6,16 @@
         "batteryUpperBoundThreshold": 80
     },
     "Material": {
-        "AcrylicBlurRadius": 12
+        "AcrylicBlurRadius": 9
     },
     "Update": {
         "CheckUpdateAtStartUp": false
     },
+    "Device": {
+        "deviceName": "HUAWEI Mobile WiFi"
+    },
     "Folders": {
-        "Download": "./",
+        "Download": "./download",
         "LocalMusic": []
     },
     "MainWindow": {
