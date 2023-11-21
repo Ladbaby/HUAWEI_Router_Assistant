@@ -143,6 +143,7 @@
         <file>qss/dark/navigation_view_interface.qss</file>
         <file>qss/dark/monitoring_status_card.qss</file>
         <file>qss/dark/traffic_statistics_card.qss</file>
+        <file>qss/dark/battery_history_card.qss</file>
 
         <file>qss/light/gallery_interface.qss</file>
         <file>qss/light/home_interface.qss</file>
@@ -155,6 +156,7 @@
         <file>qss/light/navigation_view_interface.qss</file>
         <file>qss/light/monitoring_status_card.qss</file>
         <file>qss/light/traffic_statistics_card.qss</file>
+        <file>qss/light/battery_history_card.qss</file>
 
         <file>i18n/gallery.zh_CN.qm</file>
         <file>i18n/gallery.zh_HK.qm</file>

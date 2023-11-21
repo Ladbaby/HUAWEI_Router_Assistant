@@ -4,6 +4,7 @@ import hashlib
 import base64
 import os
 import concurrent.futures
+import time
 
 from notifypy import Notify
 from .config import cfg
@@ -76,6 +77,10 @@ class Router_HW:
             "Traffic Max Limit": "-",
             "Current Upload Download": "-"
         }
+        self.battery_history_dic = {
+            "time": [],
+            "battery": []
+        }
 
         self.BatteryPercent = 0
         self.BatteryStatusStr = "-"
@@ -139,6 +144,8 @@ class Router_HW:
                     self.BatteryStatus = "0" if root.find('BatteryStatus') == None else root.find('BatteryStatus').text
                     self.BatteryStatusStr = "Charging" if self.BatteryStatus == "1" else "Not Charging"
                     self.BatteryPercent = 0 if root.find('BatteryPercent') == None else int(root.find('BatteryPercent').text)
+                    self.battery_history_dic["battery"].append(self.BatteryPercent)
+                    self.battery_history_dic["time"].append(int(time.time())) # save unix timestamp
 
                     # process battery status
                     if self.previous_battery_status != self.BatteryStatus:
@@ -468,6 +475,7 @@ class Router_HW:
     def get_month_statistics_dic(self):
         return self.month_statistics_dic
 
+    def get_battery_history_dic(self):
+        return self.battery_history_dic
 
-
-
+    

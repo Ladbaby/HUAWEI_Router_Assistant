@@ -20,6 +20,7 @@ from .navigation_view_interface import NavigationViewInterface
 from .scroll_interface import ScrollInterface
 from .status_info_interface import StatusInfoInterface
 from .setting_interface import SettingInterface
+from .battery_history_interface import BatteryHistoryInterface
 from .text_interface import TextInterface
 from .view_interface import ViewInterface
 from ..common.config import SUPPORT_URL
@@ -39,6 +40,7 @@ class MainWindow(FluentWindow):
         # create sub interface
         self.homeInterface = HomeInterface(router, self)
         self.monitoringStatusInterface = MonitoringStatusInterface(router, self)
+        self.batteryHistoryInterface = BatteryHistoryInterface(router, self)
         self.iconInterface = IconInterface(self)
         self.basicInputInterface = BasicInputInterface(self)
         self.dateTimeInterface = DateTimeInterface(self)
@@ -81,6 +83,7 @@ class MainWindow(FluentWindow):
         t = Translator()
         self.addSubInterface(self.homeInterface, FIF.HOME, self.tr('Home'))
         self.addSubInterface(self.monitoringStatusInterface, Icon.GRID, self.tr('Monitoring Status'))
+        self.addSubInterface(self.batteryHistoryInterface, Icon.GRID, self.tr('Battery History'))
         self.addSubInterface(self.iconInterface, Icon.EMOJI_TAB_SYMBOLS, t.icons)
         self.navigationInterface.addSeparator()
 
