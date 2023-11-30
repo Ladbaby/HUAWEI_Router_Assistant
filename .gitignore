@@ -1,5 +1,5 @@
 __pycache__
-app/resource/images/*
+# app/resource/images/*
 dist/*
 build/*
 log/*
@@ -10,3 +10,4 @@ debug/*
 *.ps1
 TODO.md
 test.py
+*.sh
