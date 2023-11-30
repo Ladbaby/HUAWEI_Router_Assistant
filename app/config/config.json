@@ -15,7 +15,7 @@
         "deviceName": "HUAWEI Mobile WiFi"
     },
     "Folders": {
-        "Download": "./download",
+        "Download": "C:/Users/Firefly/Apps/E/VS_Code/VS_Code_Python/Useful_Tools/RouterInfo/download",
         "LocalMusic": []
     },
     "MainWindow": {

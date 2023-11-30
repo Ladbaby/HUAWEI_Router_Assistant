@@ -24,6 +24,8 @@ class BatteryHistoryCard(QFrame):
     def __init__(self, battery_history_dic, parent=None):
         super().__init__(parent=parent)
 
+        self.setFixedSize(360, 600)
+
         # test
         battery_history_dic = {
             "time": [1696838547, 1696838650, 1696838780],
@@ -33,8 +35,8 @@ class BatteryHistoryCard(QFrame):
         system_theme = str(cfg.get(cfg.themeMode))
         # TODO: system setting case
         background_color_dic = {
-            "Theme.DARK": "black",
-            "Theme.LIGHT": "white",
+            "Theme.DARK": "#262729",
+            "Theme.LIGHT": "None",
             "Use system setting": "black"
         }
         background_color = background_color_dic[system_theme]
@@ -48,24 +50,9 @@ class BatteryHistoryCard(QFrame):
 
         battery_history_time_list = [self.convert_time(x) for x in battery_history_dic["time"]]
         x_ticks = [int(x / 60) for x in battery_history_dic["time"]]
+        y_labels_list = [10 * x for x in range(11)]
         # battery_history_time_list_enum = [list(enumerate(battery_history_time_list)), []]
         # battery_history_time_dic = dict(enumerate(battery_history_time_list))
-
-        # self.graphWidget = pg.PlotWidget()
-        # self.graphWidget.setLabel('left', 'Battery Percentage', units='%')
-        # self.graphWidget.plot(battery_history_dic["time"], battery_history_dic["battery"])
-        # self.graphWidget.setYRange(0, 100)
-        # stringaxis = pg.AxisItem(orientation='bottom')
-        # stringaxis.setTicks(battery_history_time_list_enum)
-        # self.graphWidget.setAxisItems(axisItems = {'bottom': stringaxis})
-        # self.graphWidget.setLabel('bottom', 'Time', units='s')
-
-        # self.graphWidget = pg.GraphicsLayoutWidget()
-        # # self.graphWidget.setYRange(self.y(0, 100))
-        # stringaxis = pg.AxisItem(orientation='bottom')
-        # stringaxis.setTicks([battery_history_time_dic.items()])
-        # plot = self.graphWidget.addPlot(axisItems={'bottom': stringaxis})
-        # curve = plot.plot(list(battery_history_time_dic.keys()), battery_history_dic["battery"])
 
         self.graphWidget = MplCanvas(self, width=5, height=4, dpi=100)
         self.graphWidget.axes.set_facecolor(background_color)
@@ -80,12 +67,16 @@ class BatteryHistoryCard(QFrame):
 
         # Customize y-axis tick labels.
         self.graphWidget.axes.set_yticks(range(0, 101, 10))
+        self.graphWidget.axes.set_yticklabels(y_labels_list, rotation=45, ha='right', color=front_color)
         self.graphWidget.axes.tick_params(axis='both', color=front_color)
+
+        for spine in self.graphWidget.axes.spines.values():
+            spine.set_edgecolor(front_color)
+
 
         self.hBoxLayout = QHBoxLayout(self)
         self.vBoxLayout = QVBoxLayout()
 
-        self.setFixedSize(360, 600)
 
         self.hBoxLayout.setSpacing(28)
         self.hBoxLayout.setContentsMargins(20, 0, 0, 0)
@@ -107,6 +98,6 @@ class BatteryHistoryCard(QFrame):
 class MplCanvas(FigureCanvasQTAgg):
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
+        fig = Figure(figsize=(parent.width() / dpi, parent.height() / dpi), dpi=dpi)
         self.axes = fig.add_subplot(111)
         super(MplCanvas, self).__init__(fig)
