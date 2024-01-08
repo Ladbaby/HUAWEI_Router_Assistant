@@ -9,16 +9,16 @@ from qfluentwidgets import FluentIcon as FIF
 from .gallery_interface import GalleryInterface
 from .home_interface import HomeInterface
 from .monitoring_status_interface import MonitoringStatusInterface
-from .basic_input_interface import BasicInputInterface
-from .date_time_interface import DateTimeInterface
-from .dialog_interface import DialogInterface
-from .layout_interface import LayoutInterface
-from .icon_interface import IconInterface
-from .material_interface import MaterialInterface
-from .menu_interface import MenuInterface
-from .navigation_view_interface import NavigationViewInterface
-from .scroll_interface import ScrollInterface
-from .status_info_interface import StatusInfoInterface
+# from .basic_input_interface import BasicInputInterface
+# from .date_time_interface import DateTimeInterface
+# from .dialog_interface import DialogInterface
+# from .layout_interface import LayoutInterface
+# from .icon_interface import IconInterface
+# from .material_interface import MaterialInterface
+# from .menu_interface import MenuInterface
+# from .navigation_view_interface import NavigationViewInterface
+# from .scroll_interface import ScrollInterface
+# from .status_info_interface import StatusInfoInterface
 from .setting_interface import SettingInterface
 from .battery_history_interface import BatteryHistoryInterface
 from .text_interface import TextInterface
@@ -52,8 +52,8 @@ class MainWindow(FluentWindow):
         self.scrollInterface = ScrollInterface(self)
         self.statusInfoInterface = StatusInfoInterface(self)
         self.settingInterface = SettingInterface(self)
-        self.textInterface = TextInterface(self)
-        self.viewInterface = ViewInterface(self)
+        # self.textInterface = TextInterface(self)
+        # self.viewInterface = ViewInterface(self)
 
         # initialize layout
         self.initLayout()
@@ -87,18 +87,18 @@ class MainWindow(FluentWindow):
         self.addSubInterface(self.iconInterface, Icon.EMOJI_TAB_SYMBOLS, t.icons)
         self.navigationInterface.addSeparator()
 
-        pos = NavigationItemPosition.SCROLL
-        self.addSubInterface(self.basicInputInterface, FIF.CHECKBOX,t.basicInput, pos)
-        self.addSubInterface(self.dateTimeInterface, FIF.DATE_TIME, t.dateTime, pos)
-        self.addSubInterface(self.dialogInterface, FIF.MESSAGE, t.dialogs, pos)
-        self.addSubInterface(self.layoutInterface, FIF.LAYOUT, t.layout, pos)
-        self.addSubInterface(self.materialInterface, FIF.PALETTE, t.material, pos)
-        self.addSubInterface(self.menuInterface, Icon.MENU, t.menus, pos)
-        self.addSubInterface(self.navigationViewInterface, FIF.MENU, t.navigation, pos)
-        self.addSubInterface(self.scrollInterface, FIF.SCROLL, t.scroll, pos)
-        self.addSubInterface(self.statusInfoInterface, FIF.CHAT, t.statusInfo, pos)
-        self.addSubInterface(self.textInterface, Icon.TEXT, t.text, pos)
-        self.addSubInterface(self.viewInterface, Icon.GRID, t.view, pos)
+        # pos = NavigationItemPosition.SCROLL
+        # self.addSubInterface(self.basicInputInterface, FIF.CHECKBOX,t.basicInput, pos)
+        # self.addSubInterface(self.dateTimeInterface, FIF.DATE_TIME, t.dateTime, pos)
+        # self.addSubInterface(self.dialogInterface, FIF.MESSAGE, t.dialogs, pos)
+        # self.addSubInterface(self.layoutInterface, FIF.LAYOUT, t.layout, pos)
+        # self.addSubInterface(self.materialInterface, FIF.PALETTE, t.material, pos)
+        # self.addSubInterface(self.menuInterface, Icon.MENU, t.menus, pos)
+        # self.addSubInterface(self.navigationViewInterface, FIF.MENU, t.navigation, pos)
+        # self.addSubInterface(self.scrollInterface, FIF.SCROLL, t.scroll, pos)
+        # self.addSubInterface(self.statusInfoInterface, FIF.CHAT, t.statusInfo, pos)
+        # self.addSubInterface(self.textInterface, Icon.TEXT, t.text, pos)
+        # self.addSubInterface(self.viewInterface, Icon.GRID, t.view, pos)
 
         # add custom widget to bottom
         self.navigationInterface.addWidget(
