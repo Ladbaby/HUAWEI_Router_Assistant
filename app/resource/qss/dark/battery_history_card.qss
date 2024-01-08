@@ -24,7 +24,7 @@ QScrollArea {
 
 #bannerCardView {
     /* background-color: rgba(62, 62, 62, 0.95); */
-    background-color: rgba(39, 39, 39, 0.95);
+    background-color: rgba(39, 39, 39, 1);
     border: none;
     border-radius: 10px;
     margin: 20px;

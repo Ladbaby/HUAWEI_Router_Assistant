@@ -24,20 +24,19 @@ class BatteryHistoryCard(QFrame):
     def __init__(self, battery_history_dic, parent=None):
         super().__init__(parent=parent)
 
-        self.setFixedSize(360, 600)
 
         # test
         battery_history_dic = {
-            "time": [1696838547, 1696838650, 1696838780],
-            "battery": [20, 50, 80]
+            "time": [1696838547, 1696838650, 1696838780, 1696838910],
+            "battery": [20, 50, 80, 70]
         }
 
         system_theme = str(cfg.get(cfg.themeMode))
         # TODO: system setting case
         background_color_dic = {
-            "Theme.DARK": "#262729",
-            "Theme.LIGHT": "None",
-            "Use system setting": "black"
+            "Theme.DARK": (0.152941176, 0.152941176, 0.152941176, 1),
+            "Theme.LIGHT": (0.847058824, 0.847058824, 0.847058824, 1),
+            "Use system setting": (0.152941176, 0.152941176, 0.152941176, 1)
         }
         background_color = background_color_dic[system_theme]
 
@@ -54,7 +53,8 @@ class BatteryHistoryCard(QFrame):
         # battery_history_time_list_enum = [list(enumerate(battery_history_time_list)), []]
         # battery_history_time_dic = dict(enumerate(battery_history_time_list))
 
-        self.graphWidget = MplCanvas(self, width=5, height=4, dpi=100)
+        self.graphWidget = MplCanvas(self, dpi=100)
+
         self.graphWidget.axes.set_facecolor(background_color)
         self.graphWidget.figure.patch.set_facecolor(background_color)
         # plt.figure(facecolor=background_color)
@@ -79,7 +79,7 @@ class BatteryHistoryCard(QFrame):
 
 
         self.hBoxLayout.setSpacing(28)
-        self.hBoxLayout.setContentsMargins(20, 0, 0, 0)
+        self.hBoxLayout.setContentsMargins(20, 20, 20, 20)
         self.vBoxLayout.setSpacing(2)
         self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
         self.vBoxLayout.setAlignment(Qt.AlignVCenter)
