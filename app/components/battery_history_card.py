@@ -29,13 +29,13 @@ class BatteryHistoryCard(QFrame):
         self.background_color_dic = {
             "Theme.DARK": (0.152941176, 0.152941176, 0.152941176, 1),
             "Theme.LIGHT": (0.847058824, 0.847058824, 0.847058824, 1),
-            "Use system setting": (0.152941176, 0.152941176, 0.152941176, 1)
+            "Theme.AUTO": (0.152941176, 0.152941176, 0.152941176, 1)
         }
 
         self.front_color_dic = {
             "Theme.DARK": "white",
             "Theme.LIGHT": "black",
-            "Use system setting": "white"
+            "Theme.AUTO": "white"
         }
 
         self.graphWidget = MplCanvas(self, dpi=100)

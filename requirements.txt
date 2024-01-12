@@ -1,0 +1,8 @@
+coloredlogs==15.0.1
+matplotlib==3.8.0
+# notifypy==1.0.3.0
+notify-py
+PyQt5==5.15.10
+# PyQt5_sip==12.10.1
+PyQt_Fluent_Widgets==0.9.8
+Requests==2.31.0

@@ -2,6 +2,8 @@
 
 A simple and badly-written program to display basic information of your HUAWEI Mobile Wifi 3 Pro (may support similar device), along with some useful features not provided by the official app or web interface.
 
+![](images/screenshot1.png)
+
 ## Features
 
 - 🔋 Receive notification when your device is at low battery level or finish charging, threshold customizable
@@ -27,6 +29,8 @@ A simple and badly-written program to display basic information of your HUAWEI M
     - Current Day Duration
     - Data Limit
 
+- 📊 Record battery history, and display with a graph
+
 ## How it works
 
 The program posts http request to get information from the router and parse the result.
@@ -35,7 +39,7 @@ Currently, the program is unable to perform password authentication due to lack 
 
 ## TODO
 
-- [ ] Record battery level
+- [x] Record battery level
 - [ ] Password authentication
 
 ## Credits
