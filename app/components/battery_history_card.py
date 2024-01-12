@@ -10,6 +10,7 @@ from qfluentwidgets import IconWidget, TextWrap, FlowLayout, ProgressRing
 from pyqtgraph import PlotWidget, plot
 import pyqtgraph as pg
 
+from app.common.global_logger import logger
 
 import matplotlib
 matplotlib.use('Qt5Agg')
@@ -25,63 +26,34 @@ class BatteryHistoryCard(QFrame):
         super().__init__(parent=parent)
 
 
-        # test
-        battery_history_dic = {
-            "time": [1696838547, 1696838650, 1696838780, 1696838910],
-            "battery": [20, 50, 80, 70]
-        }
+        # TEST
+        # battery_history_dic = {
+        #     "time": [1696838547, 1696838650, 1696838780, 1696838910],
+        #     "battery": [20, 50, 80, 70]
+        # }
 
-        system_theme = str(cfg.get(cfg.themeMode))
         # TODO: system setting case
-        background_color_dic = {
+        self.background_color_dic = {
             "Theme.DARK": (0.152941176, 0.152941176, 0.152941176, 1),
             "Theme.LIGHT": (0.847058824, 0.847058824, 0.847058824, 1),
             "Use system setting": (0.152941176, 0.152941176, 0.152941176, 1)
         }
-        background_color = background_color_dic[system_theme]
 
-        front_color_dic = {
+        self.front_color_dic = {
             "Theme.DARK": "white",
             "Theme.LIGHT": "black",
             "Use system setting": "white"
         }
-        front_color = front_color_dic[system_theme]
-
-        battery_history_time_list = [self.convert_time(x) for x in battery_history_dic["time"]]
-        x_ticks = [int(x / 60) for x in battery_history_dic["time"]]
-        y_labels_list = [10 * x for x in range(11)]
-        # battery_history_time_list_enum = [list(enumerate(battery_history_time_list)), []]
-        # battery_history_time_dic = dict(enumerate(battery_history_time_list))
 
         self.graphWidget = MplCanvas(self, dpi=100)
 
-        self.graphWidget.axes.set_facecolor(background_color)
-        self.graphWidget.figure.patch.set_facecolor(background_color)
-        # plt.figure(facecolor=background_color)
-        self.graphWidget.axes.plot(x_ticks, battery_history_dic["battery"], color=front_color)
-
-        self.graphWidget.axes.set_xticks(x_ticks)
-        self.graphWidget.axes.set_xticklabels(battery_history_time_list, rotation=45, ha='right', color=front_color)
-
-        self.graphWidget.axes.set_ylim(0, 100)
-
-        # Customize y-axis tick labels.
-        self.graphWidget.axes.set_yticks(range(0, 101, 10))
-        self.graphWidget.axes.set_yticklabels(y_labels_list, rotation=45, ha='right', color=front_color)
-        self.graphWidget.axes.tick_params(axis='both', color=front_color)
-
-        for spine in self.graphWidget.axes.spines.values():
-            spine.set_edgecolor(front_color)
-
+        self.updateBatteryHistory(battery_history_dic)
 
         self.hBoxLayout = QHBoxLayout(self)
         self.vBoxLayout = QVBoxLayout()
 
-
         self.hBoxLayout.setSpacing(28)
-        self.hBoxLayout.setContentsMargins(20, 20, 20, 20)
         self.vBoxLayout.setSpacing(2)
-        self.vBoxLayout.setContentsMargins(0, 0, 0, 0)
         self.vBoxLayout.setAlignment(Qt.AlignVCenter)
 
         self.hBoxLayout.setAlignment(Qt.AlignVCenter)
@@ -94,6 +66,65 @@ class BatteryHistoryCard(QFrame):
 
     def convert_time(self, unix_timestamp):
         return datetime.utcfromtimestamp(unix_timestamp + 8 * 60 * 60).strftime('%H:%M') # convert to UTC+8 time zone
+
+    def calculate_x_ticks(self, unix_timestamp):
+        dt_object = datetime.utcfromtimestamp(unix_timestamp + 8 * 60 * 60)
+        hour = dt_object.hour
+        minute = dt_object.minute
+
+        # Calculate new timestamps for xx:00 and xx:30
+        timestamp_xx00 = int(datetime(dt_object.year, dt_object.month, dt_object.day, hour, 0).timestamp())
+        timestamp_xx30 = int(datetime(dt_object.year, dt_object.month, dt_object.day, hour, 30).timestamp())
+
+        return timestamp_xx00, timestamp_xx30
+
+    def updateBatteryHistory(self, battery_history_dic):
+        system_theme = str(cfg.get(cfg.themeMode))
+        background_color = self.background_color_dic[system_theme]
+        front_color = self.front_color_dic[system_theme]
+        self.graphWidget.axes.set_facecolor(background_color)
+        self.graphWidget.figure.patch.set_facecolor(background_color)
+
+        x_ticks = [int(x / 60) for x in battery_history_dic["time"]]
+        y_labels_list = [10 * x for x in range(11)]
+        # vertical lines with color indicating charging status
+        for x, y, charging in zip(x_ticks, battery_history_dic["battery"], battery_history_dic["charging"]):
+            if charging:
+                # green
+                color = (0 / 255, 255 / 255, 54 / 255)
+            else:
+                # blue
+                color = (53 / 255, 193 / 255, 241 / 255)
+            self.graphWidget.axes.axvline(x=x, color=color, linestyle='-', linewidth=1, ymax=y / 100)
+        self.graphWidget.axes.plot(x_ticks, battery_history_dic["battery"], color=front_color)
+
+        battery_history_time_list = []
+        x_ticks = []
+        for x in battery_history_dic["time"]:
+            timestamp_xx00, timestamp_xx30 = self.calculate_x_ticks(x)
+            if timestamp_xx00 not in battery_history_dic["time"]:
+                battery_history_time_list.append(self.convert_time(timestamp_xx00))
+                battery_history_time_list.append(self.convert_time(timestamp_xx30))
+                x_ticks.append(int(timestamp_xx00 / 60))
+                x_ticks.append(int(timestamp_xx30 / 60))
+        self.graphWidget.axes.set_xticks(x_ticks)
+        self.graphWidget.axes.set_xticklabels(battery_history_time_list, rotation=45, ha='right', color=front_color)
+
+        self.graphWidget.axes.set_ylim(0, 100)
+
+        # Customize y-axis tick labels.
+        self.graphWidget.axes.set_yticks(range(0, 101, 10))
+        self.graphWidget.axes.set_yticklabels(y_labels_list, rotation=45, ha='right', color=front_color)
+        self.graphWidget.axes.tick_params(axis='both', color=front_color)
+
+        for i, spine in enumerate(self.graphWidget.axes.spines.values()):
+            # hide spine between top and right axis
+            if i == 1 or i == 3:
+                spine.set_visible(False)
+            else:
+                spine.set_edgecolor(front_color)
+
+        self.graphWidget.draw()
 
 class MplCanvas(FigureCanvasQTAgg):
 

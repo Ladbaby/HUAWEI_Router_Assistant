@@ -10,6 +10,8 @@ from notifypy import Notify
 from .config import cfg
 from.global_logger import logger
 
+from .database import Cache
+
 class Router_HW:
     def __init__(
         self, 
@@ -77,10 +79,9 @@ class Router_HW:
             "Traffic Max Limit": "-",
             "Current Upload Download": "-"
         }
-        self.battery_history_dic = {
-            "time": [],
-            "battery": []
-        }
+
+        self.db = Cache()
+        self.previous_status_time = 0
 
         self.BatteryPercent = 0
         self.BatteryStatusStr = "-"
@@ -90,7 +91,6 @@ class Router_HW:
             response_session = requests.get(self.session_url, headers=self.headers, timeout=0.5, verify=False)
 
             if response_session.status_code == 200:
-                # print(response.text)
                 root = ET.fromstring(response_session.text)
 
                 # Retrieve the content within <TokInfo> tag
@@ -144,8 +144,13 @@ class Router_HW:
                     self.BatteryStatus = "0" if root.find('BatteryStatus') == None else root.find('BatteryStatus').text
                     self.BatteryStatusStr = "Charging" if self.BatteryStatus == "1" else "Not Charging"
                     self.BatteryPercent = 0 if root.find('BatteryPercent') == None else int(root.find('BatteryPercent').text)
-                    self.battery_history_dic["battery"].append(self.BatteryPercent)
-                    self.battery_history_dic["time"].append(int(time.time())) # save unix timestamp
+                    # use sqlite3 to store the battery percentage history and the corresponding timestamp
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                        # only write to database when time interval greater than 60 seconds
+                        current_time = int(time.time())
+                        if current_time - self.previous_status_time >= 60:
+                            executor.submit(self.db.write_battery_history,{"timestamp": current_time, "percentage": self.BatteryPercent, "charging": self.BatteryStatus})
+                            self.previous_status_time = current_time
 
                     # process battery status
                     if self.previous_battery_status != self.BatteryStatus:
@@ -476,6 +481,12 @@ class Router_HW:
         return self.month_statistics_dic
 
     def get_battery_history_dic(self):
-        return self.battery_history_dic
+        battery_history_list = self.db.read_battery_history()
+        battery_history_dic = {
+            "time": [x[0] for x in battery_history_list],
+            "battery": [x[1] for x in battery_history_list],
+            "charging": [x[2] for x in battery_history_list]
+        }
+        return battery_history_dic
 
     

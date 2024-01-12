@@ -11,3 +11,4 @@ debug/*
 TODO.md
 test.py
 *.sh
+*.db

@@ -27,8 +27,8 @@ class BannerCardView(SingleDirectionScrollArea):
         self.view.setObjectName('view')
         StyleSheet.BATTERY_HISTORY_CARD.apply(self)
 
-    def updateMonitoringStatus(self, monitoring_status_dic):
-        self.monitoring_status_card.updateMonitoringStatus(monitoring_status_dic)
+    def updateBatteryHistory(self, battery_history_dict):
+        self.battery_history_card.updateBatteryHistory(battery_history_dict)
 
     def addMonitoringStatusCard(self, monitoring_status_dic):
         self.monitoring_status_card = MonitoringStatusCard(monitoring_status_dic)
@@ -68,7 +68,7 @@ class BannerWidget(QWidget):
         self.bannerCardView.setObjectName("bannerCardView")
 
     def update_monitoring_status(self):
-        self.bannerCardView.updateMonitoringStatus(self.router.get_monitoring_status_dic())
+        self.bannerCardView.updateBatteryHistory(self.router.get_battery_history_dic())
 
 class BatteryHistoryInterface(ScrollArea):
 
