@@ -1,20 +1,13 @@
 # coding:utf-8
 from datetime import datetime
-from turtle import color
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QFrame, QLabel, QVBoxLayout, QHBoxLayout
-
-from qfluentwidgets import IconWidget, TextWrap, FlowLayout, ProgressRing
-
-from pyqtgraph import PlotWidget, plot
-import pyqtgraph as pg
 
 from app.common.global_logger import logger
 
 import matplotlib
 matplotlib.use('Qt5Agg')
-# import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 

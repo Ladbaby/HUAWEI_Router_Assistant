@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt, QModelIndex
 from PyQt5.QtWidgets import QWidget, QFrame, QLabel, QVBoxLayout, QHBoxLayout, QTableWidgetItem, QStyleOptionViewItem, QHeaderView
 from PyQt5.QtGui import QPalette
 
-from qfluentwidgets import IconWidget, TextWrap, FlowLayout, ProgressRing, TableWidget, TableItemDelegate, isDarkTheme
+from qfluentwidgets import IconWidget, TableItemDelegate, isDarkTheme
 from ..common.style_sheet import StyleSheet
 
 class CustomTableItemDelegate(TableItemDelegate):

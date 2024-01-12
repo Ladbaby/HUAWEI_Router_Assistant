@@ -1,9 +1,9 @@
 # coding:utf-8
 from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtGui import QPixmap, QPainter, QColor, QBrush, QPainterPath
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 
-from qfluentwidgets import ScrollArea, isDarkTheme, FluentIcon, SingleDirectionScrollArea
+from qfluentwidgets import ScrollArea, SingleDirectionScrollArea
 from ..common.style_sheet import StyleSheet
 from ..components.monitoring_status_card import MonitoringStatusCard
 from ..components.battery_history_card import BatteryHistoryCard

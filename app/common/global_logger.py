@@ -1,7 +1,6 @@
 import logging
 import logging.handlers as handlers
 import coloredlogs
-import time
 import os
 
 logger = logging.getLogger('global')
