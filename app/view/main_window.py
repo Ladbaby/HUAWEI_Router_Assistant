@@ -1,7 +1,7 @@
 # coding: utf-8
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QIcon, QDesktopServices
-from PyQt5.QtWidgets import QApplication
+from qasync import QApplication
 
 from qfluentwidgets import NavigationAvatarWidget, NavigationItemPosition, MessageBox, FluentWindow
 from qfluentwidgets import FluentIcon as FIF

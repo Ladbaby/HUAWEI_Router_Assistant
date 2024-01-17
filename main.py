@@ -1,18 +1,17 @@
-from app.common.RouterInfo import Router_HW
-# from PyQt5.QtGui import * 
-# from PyQt5.QtWidgets import * 
-
 import os
 import sys
+import asyncio
 
 from PyQt5.QtCore import Qt, QTranslator, QTimer, QTime
 from PyQt5.QtGui import QFont, QIcon
-from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction
+from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction
 from qfluentwidgets import FluentTranslator, DWMMenu
+from qasync import QEventLoop, QApplication
 
 from app.common.config import cfg
 from app.view.main_window import MainWindow
 from app.common.global_logger import logger
+from app.common.RouterInfo import Router_HW
 
 
 
@@ -53,7 +52,8 @@ if __name__ == "__main__":
     def show_window(button):
         if button == QSystemTrayIcon.Trigger:
             w.show()
-            update()
+            w.update_monitoring_status()
+            # w.update_month_statistics()
         else:
             pass
 
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     
     w.show()
 
-    def update():
+    async def update():
         router.update_monitoring_status()
         icon = QIcon(router.get_battery_icon_path())
         tray.setIcon(icon)
@@ -88,20 +88,30 @@ if __name__ == "__main__":
             w.update_monitoring_status()
             w.update_month_statistics()
 
-    def update_traffic_statistics():
+    async def update_traffic_statistics():
         if w.isVisible():
             router.update_traffic_statistics()
             w.update_traffic_statistics()
 
-    timer = QTimer()
-    timer.timeout.connect(update)
-    timer.start(15000)
+    async def main():
+        while True:
+            await update()
+            await asyncio.sleep(15)  # Run update every 15 seconds
 
-    timer_traffic = QTimer()
-    timer_traffic.timeout.connect(update_traffic_statistics)
-    timer_traffic.start(1000)
-    
-    app.exec_()
+    async def traffic_statistics_main():
+        while True:
+            await update_traffic_statistics()
+            await asyncio.sleep(1)  # Run update_traffic_statistics every 1 second
 
-    
+    # Start the main and traffic statistics tasks
+    loop = QEventLoop(app)
+    asyncio.set_event_loop(loop)
+
+    loop.create_task(main())
+    loop.create_task(traffic_statistics_main())
+
+    # Start the application event loop
+    with loop:
+        # loop.run_until_complete(app_close_event.wait())
+        loop.run_forever()
     
