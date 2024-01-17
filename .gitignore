@@ -12,3 +12,4 @@ TODO.md
 test.py
 *.sh
 *.db
+backup/*
