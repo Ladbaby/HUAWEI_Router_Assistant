@@ -1,4 +1,5 @@
 import os
+import time
 import sqlite3
 from typing import Dict
 
@@ -49,19 +50,14 @@ class Cache:
         
     def remove_battery_history(self):
         try:
-            # return a list of tuple, each representing a record
-            records = self.read_battery_history()
+            # Calculate the timestamp 12 hours ago
+            twelve_hours_ago = int(time.time()) - (12 * 60 * 60)
 
-            # Check if the number of records is greater than 1440
-            if len(records) > 1440:
-                # Get the timestamps of the latest 1440 records
-                latest_timestamps = [record[0] for record in records]
-
-                # Delete records with timestamps not in the latest 1440
-                self.db_cache_cursor.execute('''
-                    DELETE FROM battery WHERE timestamp NOT IN ({})
-                '''.format(','.join('?' for _ in latest_timestamps)), latest_timestamps)
-                self.db_cache_conn.commit()
+            # Delete records with timestamps older than twelve_hours_ago
+            self.db_cache_cursor.execute('''
+                DELETE FROM battery WHERE timestamp < ?
+            ''', (twelve_hours_ago,))
+            self.db_cache_conn.commit()
 
             return True
         except Exception as e:

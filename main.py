@@ -1,6 +1,7 @@
 import os
 import sys
 import asyncio
+from time import perf_counter
 
 from PyQt5.QtCore import Qt, QTranslator, QTimer, QTime
 from PyQt5.QtGui import QFont, QIcon
@@ -51,9 +52,12 @@ if __name__ == "__main__":
 
     def show_window(button):
         if button == QSystemTrayIcon.Trigger:
+            # t1_start = perf_counter() 
             w.show()
             w.update_monitoring_status()
             # w.update_month_statistics()
+            # t1_stop = perf_counter() 
+            # logger.info(f"Elapsed time during the whole program in seconds: {t1_stop-t1_start}")
         else:
             pass
 

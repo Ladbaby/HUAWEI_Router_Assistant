@@ -481,6 +481,7 @@ class Router_HW:
         return self.month_statistics_dic
 
     def get_battery_history_dic(self):
+        self.db.remove_battery_history()
         battery_history_list = self.db.read_battery_history()
         battery_history_dic = {
             "time": [x[0] for x in battery_history_list],

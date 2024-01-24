@@ -1,5 +1,6 @@
 # coding:utf-8
 from datetime import datetime
+from time import perf_counter
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QFrame, QLabel, QVBoxLayout, QHBoxLayout
@@ -78,10 +79,12 @@ class BatteryHistoryCard(QFrame):
         self.graphWidget.axes.set_facecolor(background_color)
         self.graphWidget.figure.patch.set_facecolor(background_color)
 
-        x_ticks = [int(x / 60) for x in battery_history_dic["time"]]
+        x_list = [int(x / 60) for x in battery_history_dic["time"]]
         y_labels_list = [10 * x for x in range(11)]
-        # vertical lines with color indicating charging status
-        for x, y, charging in zip(x_ticks, battery_history_dic["battery"], battery_history_dic["charging"]):
+        battery_history_time_list = []
+        x_ticks = []
+        for x, y, charging, time in zip(x_list, battery_history_dic["battery"], battery_history_dic["charging"], battery_history_dic["time"]):
+            # vertical lines with color indicating charging status
             if charging:
                 # green
                 color = (0 / 255, 255 / 255, 54 / 255)
@@ -89,17 +92,16 @@ class BatteryHistoryCard(QFrame):
                 # blue
                 color = (53 / 255, 193 / 255, 241 / 255)
             self.graphWidget.axes.axvline(x=x, color=color, linestyle='-', linewidth=1, ymax=y / 100)
-        self.graphWidget.axes.plot(x_ticks, battery_history_dic["battery"], color=front_color)
 
-        battery_history_time_list = []
-        x_ticks = []
-        for x in battery_history_dic["time"]:
-            timestamp_xx00, timestamp_xx30 = self.calculate_x_ticks(x)
+            # calculate x ticks
+            timestamp_xx00, timestamp_xx30 = self.calculate_x_ticks(time)
             if timestamp_xx00 not in battery_history_dic["time"]:
                 battery_history_time_list.append(self.convert_time(timestamp_xx00))
                 battery_history_time_list.append(self.convert_time(timestamp_xx30))
                 x_ticks.append(int(timestamp_xx00 / 60))
                 x_ticks.append(int(timestamp_xx30 / 60))
+        self.graphWidget.axes.plot(x_list, battery_history_dic["battery"], color=front_color)
+        
         self.graphWidget.axes.set_xticks(x_ticks)
         self.graphWidget.axes.set_xticklabels(battery_history_time_list, rotation=45, ha='right', color=front_color)
 
@@ -116,7 +118,7 @@ class BatteryHistoryCard(QFrame):
                 spine.set_visible(False)
             else:
                 spine.set_edgecolor(front_color)
-
+        
         self.graphWidget.draw()
 
 class MplCanvas(FigureCanvasQTAgg):
