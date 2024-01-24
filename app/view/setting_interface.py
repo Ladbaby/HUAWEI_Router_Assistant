@@ -19,9 +19,9 @@ class SettingInterface(ScrollArea):
     """ Setting interface """
 
     checkUpdateSig = pyqtSignal()
-    musicFoldersChanged = pyqtSignal(list)
+    # musicFoldersChanged = pyqtSignal(list)
     acrylicEnableChanged = pyqtSignal(bool)
-    downloadFolderChanged = pyqtSignal(str)
+    # downloadFolderChanged = pyqtSignal(str)
     minimizeToTrayChanged = pyqtSignal(bool)
 
     def __init__(self, parent=None):
@@ -77,22 +77,22 @@ class SettingInterface(ScrollArea):
         )
 
         # music folders
-        self.musicInThisPCGroup = SettingCardGroup(
-            self.tr("Music on this PC"), self.scrollWidget)
-        self.musicFolderCard = FolderListSettingCard(
-            cfg.musicFolders,
-            self.tr("Local music library"),
-            directory=QStandardPaths.writableLocation(
-                QStandardPaths.MusicLocation),
-            parent=self.musicInThisPCGroup
-        )
-        self.downloadFolderCard = PushSettingCard(
-            self.tr('Choose folder'),
-            FIF.DOWNLOAD,
-            self.tr("Download directory"),
-            cfg.get(cfg.downloadFolder),
-            self.musicInThisPCGroup
-        )
+        # self.musicInThisPCGroup = SettingCardGroup(
+        #     self.tr("Music on this PC"), self.scrollWidget)
+        # self.musicFolderCard = FolderListSettingCard(
+        #     cfg.musicFolders,
+        #     self.tr("Local music library"),
+        #     directory=QStandardPaths.writableLocation(
+        #         QStandardPaths.MusicLocation),
+        #     parent=self.musicInThisPCGroup
+        # )
+        # self.downloadFolderCard = PushSettingCard(
+        #     self.tr('Choose folder'),
+        #     FIF.DOWNLOAD,
+        #     self.tr("Download directory"),
+        #     cfg.get(cfg.downloadFolder),
+        #     self.musicInThisPCGroup
+        # )
 
         # personalization
         self.personalGroup = SettingCardGroup(
@@ -224,8 +224,8 @@ class SettingInterface(ScrollArea):
         self.deviceGroup.addSettingCard(self.deviceNameCard)
 
         # add cards to group
-        self.musicInThisPCGroup.addSettingCard(self.musicFolderCard)
-        self.musicInThisPCGroup.addSettingCard(self.downloadFolderCard)
+        # self.musicInThisPCGroup.addSettingCard(self.musicFolderCard)
+        # self.musicInThisPCGroup.addSettingCard(self.downloadFolderCard)
 
         self.personalGroup.addSettingCard(self.themeCard)
         self.personalGroup.addSettingCard(self.themeColorCard)
@@ -247,7 +247,7 @@ class SettingInterface(ScrollArea):
         self.expandLayout.setContentsMargins(36, 10, 36, 0)
         self.expandLayout.addWidget(self.batteryGroup)
         self.expandLayout.addWidget(self.deviceGroup)
-        self.expandLayout.addWidget(self.musicInThisPCGroup)
+        # self.expandLayout.addWidget(self.musicInThisPCGroup)
         self.expandLayout.addWidget(self.personalGroup)
         self.expandLayout.addWidget(self.materialGroup)
         self.expandLayout.addWidget(self.updateSoftwareGroup)
@@ -263,15 +263,15 @@ class SettingInterface(ScrollArea):
             parent=self
         )
 
-    def __onDownloadFolderCardClicked(self):
-        """ download folder card clicked slot """
-        folder = QFileDialog.getExistingDirectory(
-            self, self.tr("Choose folder"), "./")
-        if not folder or cfg.get(cfg.downloadFolder) == folder:
-            return
+    # def __onDownloadFolderCardClicked(self):
+    #     """ download folder card clicked slot """
+    #     folder = QFileDialog.getExistingDirectory(
+    #         self, self.tr("Choose folder"), "./")
+    #     if not folder or cfg.get(cfg.downloadFolder) == folder:
+    #         return
 
-        cfg.set(cfg.downloadFolder, folder)
-        self.downloadFolderCard.setContent(folder)
+    #     cfg.set(cfg.downloadFolder, folder)
+    #     self.downloadFolderCard.setContent(folder)
 
     def __connectSignalToSlot(self):
         """ connect signal to slot """
@@ -279,10 +279,10 @@ class SettingInterface(ScrollArea):
         cfg.themeChanged.connect(setTheme)
 
         # music in the pc
-        self.musicFolderCard.folderChanged.connect(
-            self.musicFoldersChanged)
-        self.downloadFolderCard.clicked.connect(
-            self.__onDownloadFolderCardClicked)
+        # self.musicFolderCard.folderChanged.connect(
+        #     self.musicFoldersChanged)
+        # self.downloadFolderCard.clicked.connect(
+        #     self.__onDownloadFolderCardClicked)
 
         # personalization
         self.themeColorCard.colorChanged.connect(setThemeColor)
