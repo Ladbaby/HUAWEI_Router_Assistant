@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QFrame
 from qfluentwidgets import (ScrollArea, PushButton, ToolButton, FluentIcon,
                             isDarkTheme, IconWidget, Theme, ToolTipFilter, TitleLabel, CaptionLabel,
                             StrongBodyLabel, BodyLabel)
-from ..common.config import cfg, FEEDBACK_URL, HELP_URL, EXAMPLE_URL
+from ..common.config import cfg, FEEDBACK_URL, REPO_URL
 from ..common.icon import Icon
 from ..common.style_sheet import StyleSheet
 from ..common.signal_bus import signalBus
@@ -39,12 +39,9 @@ class ToolBar(QWidget):
         self.titleLabel = TitleLabel(title, self)
         self.subtitleLabel = CaptionLabel(subtitle, self)
 
-        self.documentButton = PushButton(
-            self.tr('Documentation'), self, FluentIcon.DOCUMENT)
         self.sourceButton = PushButton(self.tr('Source'), self, FluentIcon.GITHUB)
         self.themeButton = ToolButton(FluentIcon.CONSTRACT, self)
         self.separator = SeparatorWidget(self)
-        self.supportButton = ToolButton(FluentIcon.HEART, self)
         self.feedbackButton = ToolButton(FluentIcon.FEEDBACK, self)
 
         self.vBoxLayout = QVBoxLayout(self)
@@ -65,29 +62,22 @@ class ToolBar(QWidget):
 
         self.buttonLayout.setSpacing(4)
         self.buttonLayout.setContentsMargins(0, 0, 0, 0)
-        self.buttonLayout.addWidget(self.documentButton, 0, Qt.AlignLeft)
         self.buttonLayout.addWidget(self.sourceButton, 0, Qt.AlignLeft)
         self.buttonLayout.addStretch(1)
         self.buttonLayout.addWidget(self.themeButton, 0, Qt.AlignRight)
         self.buttonLayout.addWidget(self.separator, 0, Qt.AlignRight)
-        self.buttonLayout.addWidget(self.supportButton, 0, Qt.AlignRight)
         self.buttonLayout.addWidget(self.feedbackButton, 0, Qt.AlignRight)
         self.buttonLayout.setAlignment(Qt.AlignVCenter | Qt.AlignLeft)
 
         self.themeButton.installEventFilter(ToolTipFilter(self.themeButton))
-        self.supportButton.installEventFilter(ToolTipFilter(self.supportButton))
         self.feedbackButton.installEventFilter(
             ToolTipFilter(self.feedbackButton))
         self.themeButton.setToolTip(self.tr('Toggle theme'))
-        self.supportButton.setToolTip(self.tr('Support me'))
         self.feedbackButton.setToolTip(self.tr('Send feedback'))
 
         self.themeButton.clicked.connect(self.toggleTheme)
-        self.supportButton.clicked.connect(signalBus.supportSignal)
-        self.documentButton.clicked.connect(
-            lambda: QDesktopServices.openUrl(QUrl(HELP_URL)))
         self.sourceButton.clicked.connect(
-            lambda: QDesktopServices.openUrl(QUrl(EXAMPLE_URL)))
+            lambda: QDesktopServices.openUrl(QUrl(REPO_URL)))
         self.feedbackButton.clicked.connect(
             lambda: QDesktopServices.openUrl(QUrl(FEEDBACK_URL)))
 

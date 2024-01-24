@@ -8,15 +8,8 @@
     "Material": {
         "AcrylicBlurRadius": 9
     },
-    "Update": {
-        "CheckUpdateAtStartUp": false
-    },
     "Device": {
         "deviceName": "HUAWEI Mobile WiFi"
-    },
-    "Folders": {
-        "Download": "C:/Users/Firefly/Apps/E/VS_Code/VS_Code_Python/Useful_Tools/RouterInfo/download",
-        "LocalMusic": []
     },
     "MainWindow": {
         "DpiScale": "Auto",

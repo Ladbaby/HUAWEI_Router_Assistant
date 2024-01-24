@@ -33,12 +33,6 @@ class LanguageSerializer(ConfigSerializer):
 class Config(QConfig):
     """ Config of application """
 
-    # folders
-    # musicFolders = ConfigItem(
-    #     "Folders", "LocalMusic", [], FolderListValidator())
-    # downloadFolder = ConfigItem(
-    #     "Folders", "Download", "app/download", FolderValidator())
-
     # main window
     dpiScale = OptionsConfigItem(
         "MainWindow", "DpiScale", "Auto", OptionsValidator([1, 1.25, 1.5, 1.75, 2, "Auto"]), restart=True)
@@ -47,9 +41,6 @@ class Config(QConfig):
 
     # Material
     blurRadius  = RangeConfigItem("Material", "AcrylicBlurRadius", 15, RangeValidator(0, 40))
-
-    # software update
-    checkUpdateAtStartUp = ConfigItem("Update", "CheckUpdateAtStartUp", True, BoolValidator())
 
     batteryUpperBoundNotification = ConfigItem("Battery", "batteryUpperBoundNotification", True, BoolValidator())
 
@@ -65,15 +56,12 @@ class Config(QConfig):
 
     enableLogging = ConfigItem("Developer", "enableLogging", False, BoolValidator())
 
-YEAR = 2023
+YEAR = 2024
 AUTHOR = "ladbaby"
 VERSION = __version__
-HELP_URL = "https://pyqt-fluent-widgets.readthedocs.io/zh_CN/latest"
-REPO_URL = "https://github.com/zhiyiYo/PyQt-Fluent-Widgets"
-EXAMPLE_URL = "https://github.com/zhiyiYo/PyQt-Fluent-Widgets/tree/master/examples"
-FEEDBACK_URL = "https://github.com/zhiyiYo/PyQt-Fluent-Widgets/issues"
-RELEASE_URL = "https://github.com/zhiyiYo/PyQt-Fluent-Widgets/releases/latest"
-SUPPORT_URL = "https://afdian.net/a/zhiyiYo"
+REPO_URL = "https://github.com/Ladbaby/HUAWEI_Router_Assistant"
+FEEDBACK_URL = "https://github.com/Ladbaby/HUAWEI_Router_Assistant/issues"
+RELEASE_URL = "https://github.com/Ladbaby/HUAWEI_Router_Assistant/releases/latest"
 
 
 cfg = Config()
