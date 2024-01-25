@@ -98,8 +98,7 @@ if __name__ == "__main__":
             w.update_traffic_statistics()
 
     def update_battery_history():
-        if w.isVisible():
-            w.update_battery_history()
+        w.update_battery_history()
 
     async def main():
         while True:
