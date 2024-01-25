@@ -73,39 +73,52 @@ class BatteryHistoryCard(QFrame):
         return timestamp_xx00, timestamp_xx30
 
     def updateBatteryHistory(self, battery_history_dic):
+        self.battery_history_dic = battery_history_dic
         system_theme = str(cfg.get(cfg.themeMode))
         background_color = self.background_color_dic[system_theme]
         front_color = self.front_color_dic[system_theme]
         self.graphWidget.axes.set_facecolor(background_color)
         self.graphWidget.figure.patch.set_facecolor(background_color)
 
-        x_list = [int(x / 60) for x in battery_history_dic["time"]]
+        x_list = [int(x) for x in battery_history_dic["time"]]
         y_labels_list = [10 * x for x in range(11)]
         battery_history_time_list = []
         x_ticks = []
-        for x, y, charging, time in zip(x_list, battery_history_dic["battery"], battery_history_dic["charging"], battery_history_dic["time"]):
+        stride = 15
+        previous_timestamp = 0
+        i = 0
+        linewidth = min(5, self.width() / (len(x_list)) * 3)
+        for x, y, charging in zip(x_list, battery_history_dic["battery"], battery_history_dic["charging"]):
             # vertical lines with color indicating charging status
-            if charging:
-                # green
-                color = (0 / 255, 255 / 255, 54 / 255)
-            else:
-                # blue
-                color = (53 / 255, 193 / 255, 241 / 255)
-            self.graphWidget.axes.axvline(x=x, color=color, linestyle='-', linewidth=1, ymax=y / 100)
+            # if consecutive records less than `stride`, then ignore
+            if (x - previous_timestamp <= 20 and i % stride == 0) or x - previous_timestamp > 20:
+                i += 1
+                if charging:
+                    # green
+                    color = (0 / 255, 255 / 255, 54 / 255)
+                else:
+                    # blue
+                    color = (53 / 255, 193 / 255, 241 / 255)
+                self.graphWidget.axes.axvline(x=x, color=color, linestyle='-', linewidth=linewidth, ymin=0.05, ymax=y / 100, solid_capstyle='round')
+            elif x - previous_timestamp <= 20 and i % stride != 0:
+                i += 1
+
+            previous_timestamp = x
 
             # calculate x ticks
-            timestamp_xx00, timestamp_xx30 = self.calculate_x_ticks(time)
-            if timestamp_xx00 not in battery_history_dic["time"]:
+            timestamp_xx00, timestamp_xx30 = self.calculate_x_ticks(x)
+            if timestamp_xx00 not in x_ticks:
                 battery_history_time_list.append(self.convert_time(timestamp_xx00))
                 battery_history_time_list.append(self.convert_time(timestamp_xx30))
-                x_ticks.append(int(timestamp_xx00 / 60))
-                x_ticks.append(int(timestamp_xx30 / 60))
-        self.graphWidget.axes.plot(x_list, battery_history_dic["battery"], color=front_color)
+                x_ticks.append(int(timestamp_xx00))
+                x_ticks.append(int(timestamp_xx30))
         
         self.graphWidget.axes.set_xticks(x_ticks)
         self.graphWidget.axes.set_xticklabels(battery_history_time_list, rotation=45, ha='right', color=front_color)
 
         self.graphWidget.axes.set_ylim(0, 100)
+        padding = 1800
+        self.graphWidget.axes.set_xlim(x_list[-1] - padding, x_list[0] + padding)
 
         # Customize y-axis tick labels.
         self.graphWidget.axes.set_yticks(range(0, 101, 10))
@@ -120,6 +133,11 @@ class BatteryHistoryCard(QFrame):
                 spine.set_edgecolor(front_color)
         
         self.graphWidget.draw()
+
+    def resizeEvent(self, event):
+        # Call your custom function when the window is resized
+        self.updateBatteryHistory(self.battery_history_dic)
+        event.accept()
 
 class MplCanvas(FigureCanvasQTAgg):
 

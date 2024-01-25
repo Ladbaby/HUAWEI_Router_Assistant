@@ -41,13 +41,15 @@ class MainWindow(FluentWindow):
     def update_monitoring_status(self):
         self.homeInterface.update_monitoring_status()
         self.monitoringStatusInterface.update_monitoring_status()
-        self.batteryHistoryInterface.update_monitoring_status()
 
     def update_traffic_statistics(self):
         self.homeInterface.update_traffic_statistics()
 
     def update_month_statistics(self):
         self.homeInterface.update_month_statistics()
+
+    def update_battery_history(self):
+        self.batteryHistoryInterface.update_monitoring_status()
 
     def initLayout(self):
         signalBus.switchToSampleCard.connect(self.switchToSample)

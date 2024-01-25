@@ -84,7 +84,7 @@ if __name__ == "__main__":
     
     w.show()
 
-    async def update():
+    def update():
         router.update_monitoring_status()
         icon = QIcon(router.get_battery_icon_path())
         tray.setIcon(icon)
@@ -92,20 +92,29 @@ if __name__ == "__main__":
             w.update_monitoring_status()
             w.update_month_statistics()
 
-    async def update_traffic_statistics():
+    def update_traffic_statistics():
         if w.isVisible():
             router.update_traffic_statistics()
             w.update_traffic_statistics()
 
+    def update_battery_history():
+        if w.isVisible():
+            w.update_battery_history()
+
     async def main():
         while True:
-            await update()
+            update()
             await asyncio.sleep(15)  # Run update every 15 seconds
 
     async def traffic_statistics_main():
         while True:
-            await update_traffic_statistics()
+            update_traffic_statistics()
             await asyncio.sleep(1)  # Run update_traffic_statistics every 1 second
+
+    async def battery_history_main():
+        while True:
+            update_battery_history()
+            await asyncio.sleep(15 * 60) # run every 15 mins
 
     # Start the main and traffic statistics tasks
     loop = QEventLoop(app)
@@ -113,6 +122,7 @@ if __name__ == "__main__":
 
     loop.create_task(main())
     loop.create_task(traffic_statistics_main())
+    loop.create_task(battery_history_main())
 
     # Start the application event loop
     with loop:
