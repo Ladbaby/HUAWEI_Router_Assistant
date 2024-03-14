@@ -87,7 +87,7 @@ class BatteryHistoryCard(QFrame):
         stride = 15
         previous_timestamp = 0
         i = 0
-        linewidth = min(5, self.width() / (len(x_list)) * 3)
+        linewidth = min(5, self.width() / (len(x_list)) * 3 if len(x_list) != 0 else 1)
         for x, y, charging in zip(x_list, battery_history_dic["battery"], battery_history_dic["charging"]):
             # vertical lines with color indicating charging status
             # if consecutive records less than `stride`, then ignore
