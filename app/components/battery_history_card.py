@@ -81,6 +81,8 @@ class BatteryHistoryCard(QFrame):
         self.graphWidget.figure.patch.set_facecolor(background_color)
 
         x_list = [int(x) for x in battery_history_dic["time"]]
+        if len(x_list) == 0:
+            return
         y_labels_list = [10 * x for x in range(11)]
         battery_history_time_list = []
         x_ticks = []
