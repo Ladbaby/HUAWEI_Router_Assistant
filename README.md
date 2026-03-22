@@ -1,5 +1,7 @@
 ﻿# 📶 HUAWEI Router Assistant
 
+![total downloads](https://img.shields.io/github/downloads/Ladbaby/HUAWEI_Router_Assistant/total)
+
 A simple and badly-written program to display basic information of your HUAWEI Mobile Wifi 3 Pro (may support similar device), along with some useful features not provided by the official app or web interface.
 
 ![](images/screenshot1.png)
