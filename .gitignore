@@ -1,5 +1,6 @@
 __pycache__
 .venv/
+.pi-subagents/
 # app/resource/images/*
 dist/*
 build/*
