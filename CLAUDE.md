@@ -59,3 +59,13 @@ Push directly to the main branch — no feature branches or PR workflow.
 - Password authentication to the router is not implemented (unknown secure mechanism)
 - Some router data requires authenticated sessions and is unavailable
 - SQLite database (`sqlite.db`) stores battery history with 12-hour retention
+
+# Verification policy
+- Never assert a fact about an external API, OS behavior, file format, or
+  library version from memory alone. Treat it as a hypothesis.
+- Before stating such a fact, verify it: write and run a minimal script
+  that exercises the real behavior, or check official docs/source via
+  WebFetch. If you cannot verify within reasonable effort, say
+  "unverified" explicitly instead of asserting.
+- Show your verification (the command run, its output) rather than just
+  the conclusion.
