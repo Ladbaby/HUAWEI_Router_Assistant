@@ -1,14 +1,15 @@
 # coding:utf-8
-from enum import Enum
-
 import datetime
+import os
 import pathlib
 import tomllib
+from enum import Enum
 
 from PyQt5.QtCore import QLocale
-from qfluentwidgets import (qconfig, QConfig, ConfigItem, OptionsConfigItem, BoolValidator,
-                            OptionsValidator, RangeConfigItem, RangeValidator,
-                            EnumSerializer, ConfigSerializer)
+from qfluentwidgets import (BoolValidator, ConfigItem, ConfigSerializer,
+                            EnumSerializer, OptionsConfigItem,
+                            OptionsValidator, QConfig, RangeConfigItem,
+                            RangeValidator, qconfig)
 
 
 class Language(Enum):
@@ -64,7 +65,14 @@ YEAR = datetime.date.today().year
 AUTHOR = "ladbaby"
 
 def _read_version() -> str:
-    """Read the application version from pyproject.toml."""
+    """Read the application version.
+
+    Uses ROUTER_INFO_VERSION env var if set (PyInstaller build-time injection).
+    Falls back to reading pyproject.toml at runtime (development mode).
+    """
+    env_version = os.environ.get("ROUTER_INFO_VERSION")
+    if env_version:
+        return env_version
     pyproject = pathlib.Path(__file__).parent.parent.parent / "pyproject.toml"
     with open(pyproject, "rb") as f:
         data = tomllib.load(f)

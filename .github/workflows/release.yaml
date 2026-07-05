@@ -83,12 +83,16 @@ jobs:
       - name: Install dependencies
         run: uv sync --frozen
       - name: Extract version
+        id: version
         shell: pwsh
         run: |
-          $version = (uv pip tree --prefix 2>$null);
-          python -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d['project']['version'])"
+          $version = python -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d['project']['version'])"
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+          echo "Extracted version: $version"
       - name: Build with PyInstaller
         shell: pwsh
+        env:
+          ROUTER_INFO_VERSION: ${{ steps.version.outputs.version }}
         run: |
           .venv\Scripts\pyinstaller `
             --name HUAWEI_Router_Assistant `
@@ -133,9 +137,16 @@ jobs:
         run: pip install uv
       - name: Install dependencies
         run: uv sync --frozen
+      - name: Extract version
+        id: version-linux
+        run: |
+          VERSION=$(python -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d['project']['version'])")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: Install PyInstaller
         run: uv pip install pyinstaller
       - name: Build with PyInstaller
+        env:
+          ROUTER_INFO_VERSION: ${{ steps.version-linux.outputs.version }}
         run: |
           DESKTOP_NOTIFIER_RESOURCES=$(.venv/bin/python -c \
             "import desktop_notifier; print(desktop_notifier.__path__[0])")
