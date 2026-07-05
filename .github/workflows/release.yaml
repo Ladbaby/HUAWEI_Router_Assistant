@@ -148,6 +148,10 @@ jobs:
           VERSION=$(python -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d['project']['version'])")
           echo "version=v${VERSION}" >> $GITHUB_OUTPUT
 
+      - name: Create tag (if not exists)
+        run: |
+          git tag ${{ steps.version.outputs.version }} 2>/dev/null || echo "Tag already exists"
+
       - name: Find previous tag
         id: prev
         run: |
@@ -193,10 +197,6 @@ jobs:
           else
             echo "No build artifacts to checksum."
           fi
-
-      - name: Create tag (if not exists)
-        run: |
-          git tag ${{ steps.version.outputs.version }} 2>/dev/null || echo "Tag already exists"
 
       - name: Push tag
         run: git push origin ${{ steps.version.outputs.version }}
