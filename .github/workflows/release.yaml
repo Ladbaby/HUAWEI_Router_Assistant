@@ -116,7 +116,7 @@ jobs:
 
   build-macos:
     name: Build macOS
-    runs-on: macos-latest
+    runs-on: macos-13
     if: contains(github.event.inputs.platforms, 'macos')
     steps:
       - uses: actions/checkout@v4
@@ -166,7 +166,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libgl1-mesa-glx libegl1-mesa libxkbcommon0 \
+            libgl1 libglx-mesa0 libegl1 \
+            libxkbcommon0 \
             libxcb1 libxcomposite1 libxdamage1 libxrandr2 \
             libxss1 libxtst6 libatk1.0-0 libatk-bridge2.0-0 \
             libgtk-3-0 libglib2.0-0
