@@ -239,11 +239,15 @@ jobs:
         run: ls -la dist/ || echo "No build artifacts found (some platforms may have been skipped)"
 
       - name: Checksums
-        if: [ -d dist ] && [ "$(ls -A dist 2>/dev/null)" != "" ]
+        if: success()
         working-directory: dist
         run: |
-          find . -type f | sort | xargs sha256sum > checksums.txt
-          cat checksums.txt
+          if [ "$(ls -A . 2>/dev/null)" != "" ]; then
+            find . -type f | sort | xargs sha256sum > checksums.txt
+            cat checksums.txt
+          else
+            echo "No build artifacts to checksum."
+          fi
 
       - name: Create tag (if not exists)
         run: |
