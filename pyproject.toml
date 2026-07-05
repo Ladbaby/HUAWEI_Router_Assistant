@@ -6,7 +6,7 @@ requires-python = ">=3.12"
 dependencies = [
     "coloredlogs==15.0.1",
     "matplotlib==3.8.0",
-    "notify-py",
+    "desktop-notifier",
     "PyQt5==5.15.10",
     "PyQt_Fluent_Widgets==0.9.8",
     "requests==2.31.0",

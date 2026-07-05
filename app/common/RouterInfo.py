@@ -6,7 +6,7 @@ import os
 import concurrent.futures
 import time
 
-from notifypy import Notify
+from .notify import send_notification
 from .config import cfg
 from.global_logger import logger
 
@@ -159,21 +159,21 @@ class Router_HW:
 
                     if cfg.get(cfg.batteryUpperBoundNotification):
                         if self.BatteryPercent > cfg.get(cfg.batteryUpperBoundThreshold) and self.BatteryStatus == "1" and not self.if_already_notify:
-                            self.if_already_notify = True 
-                            notification = Notify()
-                            notification.title = "HUAWEI Mobile WiFi 3 Pro finished charging"
-                            notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
-                            notification.icon = 'app/resource/images/icons/battery_over_80.ico'
-                            notification.send(block=False)
+                            self.if_already_notify = True
+                            send_notification(
+                                "HUAWEI Mobile WiFi 3 Pro finished charging",
+                                'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr,
+                                'app/resource/images/icons/battery_over_80.ico',
+                            )
 
                     if cfg.get(cfg.batteryLowerBoundNotification):
                         if self.BatteryPercent < cfg.get(cfg.batteryLowerBoundThreshold) and self.BatteryStatus == "0" and not self.if_already_notify:
-                            self.if_already_notify = True 
-                            notification = Notify()
-                            notification.title = "HUAWEI Mobile WiFi 3 Pro need charging"
-                            notification.message = 'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr
-                            notification.icon = 'app/resource/images/icons/battery_below_30.ico'
-                            notification.send(block=False)
+                            self.if_already_notify = True
+                            send_notification(
+                                "HUAWEI Mobile WiFi 3 Pro need charging",
+                                'Battery level: ' + str(self.BatteryPercent) + "%\n" + 'Status: ' + self.BatteryStatusStr,
+                                'app/resource/images/icons/battery_below_30.ico',
+                            )
                 except:
                     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                         executor.submit(self.write_warning_log, "`get_status` failed to find battery information")
