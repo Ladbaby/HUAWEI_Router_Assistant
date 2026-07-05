@@ -1,7 +1,7 @@
 [project]
 name = "HUAWEI_Router_Assistant"
-version = "0.1.0"
-description = "A simple program to display basic information of your HUAWEI Mobile Wifi 3 Pro"
+version = "0.2.4"
+description = "A simple program to display basic information of your HUAWEI Router"
 requires-python = ">=3.12"
 dependencies = [
     "coloredlogs==15.0.1",
