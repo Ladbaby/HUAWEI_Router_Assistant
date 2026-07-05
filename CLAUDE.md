@@ -15,7 +15,7 @@ HUAWEI Router Assistant — a PyQt5 desktop app that monitors a HUAWEI Mobile Wi
 ## Running the App
 
 - **Development**: `python main.py` from the project root (requires `uv sync` first)
-- **Distribution**: `.\build.ps1` runs PyInstaller using `@HUAWEI_Router_Assistant.spec` to produce a Windows `.exe`
+- **Distribution**: `.\build.ps1` runs PyInstaller to produce a Windows `.exe`
 - The app runs as a system-tray icon with three async polling loops (15s monitoring, 1s traffic, 15min battery history)
 
 ## Critical Gotcha: Router Must Be Reachable
@@ -43,7 +43,6 @@ Settings are loaded from `app/config/config.json` using `qfluentwidgets.QConfig`
 - Install dependencies: `uv sync`
 - Run: `python main.py`
 - Package: `.\build.ps1` (PyInstaller, produces `dist\HUAWEI_Router_Assistant\`)
-- PyInstaller spec: `@HUAWEI_Router_Assistant.spec` (includes battery icons and logo as data files, `--noconsole` mode)
 
 ## Version Control
 
