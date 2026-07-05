@@ -18,10 +18,10 @@ import sys
 
 def git_log(range_str: str, grep_pattern: str, repo_url: str) -> list[str]:
     """Return sorted, deduplicated commit lines for a given commit-type filter."""
-    fmt = f"* [%h]({repo_url}/commit/%H) %s by @%an"
+    fmt = f"--pretty=* [%h]({repo_url}/commit/%H) %s by @%an"
     try:
         result = subprocess.run(
-            ["git", "log", "--pretty", fmt, "--grep", grep_pattern, "-i", range_str],
+            ["git", "log", fmt, "--grep", grep_pattern, "-i", range_str],
             capture_output=True, text=True, check=True,
         )
     except subprocess.CalledProcessError:

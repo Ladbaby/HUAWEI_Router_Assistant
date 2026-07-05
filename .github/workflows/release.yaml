@@ -117,7 +117,7 @@ jobs:
   build-linux:
     name: Build Linux
     runs-on: ubuntu-latest
-    if: contains(github.event.inputs.platforms, 'linux')
+    if: ${{ contains(github.event.inputs.platforms, 'linux') }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -174,7 +174,7 @@ jobs:
     name: Publish Release
     permissions:
       contents: write
-    if: github.event_name == 'workflow_dispatch'
+    if: ${{ always() && github.event_name == 'workflow_dispatch' && needs.generate-notes.result == 'success' && (needs.build-windows.result == 'success' || needs.build-windows.result == 'skipped') && (needs.build-linux.result == 'success' || needs.build-linux.result == 'skipped') }}
     needs: [generate-notes, build-windows, build-linux]
     runs-on: ubuntu-latest
     steps:
