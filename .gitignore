@@ -14,5 +14,7 @@ debug/*
 TODO.md
 test.py
 *.sh
+!.github/**/*.sh
+!.github/**/*.py
 *.db
 backup/*
