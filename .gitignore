@@ -17,4 +17,5 @@ test.py
 !.github/**/*.sh
 !.github/**/*.py
 *.db
+app/common/version.py
 backup/*

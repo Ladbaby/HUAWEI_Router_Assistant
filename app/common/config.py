@@ -67,12 +67,22 @@ AUTHOR = "ladbaby"
 def _read_version() -> str:
     """Read the application version.
 
-    Uses ROUTER_INFO_VERSION env var if set (PyInstaller build-time injection).
-    Falls back to reading pyproject.toml at runtime (development mode).
+    Priority:
+    1. version.py (baked into binary at build time)
+    2. ROUTER_INFO_VERSION env var (manual injection)
+    3. pyproject.toml on disk (development mode)
     """
+    # Check for build-time generated version module
+    try:
+        from app.common.version import __version__
+        return __version__
+    except (ImportError, ModuleNotFoundError):
+        pass
+
     env_version = os.environ.get("ROUTER_INFO_VERSION")
     if env_version:
         return env_version
+
     pyproject = pathlib.Path(__file__).parent.parent.parent / "pyproject.toml"
     with open(pyproject, "rb") as f:
         data = tomllib.load(f)

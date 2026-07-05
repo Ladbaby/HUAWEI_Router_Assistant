@@ -37,19 +37,24 @@ jobs:
           echo "Extracted version: $version"
       - name: Build with PyInstaller
         shell: pwsh
-        env:
-          ROUTER_INFO_VERSION: ${{ steps.version.outputs.version }}
         run: |
-          .venv\Scripts\pyinstaller `
-            --name HUAWEI_Router_Assistant `
-            --onefile `
-            --add-data "app/resource/images/icons/battery_over_80.ico;app/resource/images/icons/" `
-            --add-data "app/resource/images/icons/battery_below_30.ico;app/resource/images/icons/" `
-            --add-data "app/resource/images/logo.ico;app/resource/images/" `
-            --add-data ".venv\Lib\site-packages\desktop_notifier\resources;desktop_notifier\resources" `
-            --icon "app/resource/images/logo.ico" `
-            --noconsole `
-            main.py
+          $version = python -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d['project']['version'])"
+          echo "Building version: $version"
+          "__version__ = `"$version`"" | Out-File -Encoding utf8 -FilePath app\common\version.py
+          try {
+            .venv\Scripts\pyinstaller `
+              --name HUAWEI_Router_Assistant `
+              --onefile `
+              --add-data "app/resource/images/icons/battery_over_80.ico;app/resource/images/icons/" `
+              --add-data "app/resource/images/icons/battery_below_30.ico;app/resource/images/icons/" `
+              --add-data "app/resource/images/logo.ico;app/resource/images/" `
+              --add-data ".venv\Lib\site-packages\desktop_notifier\resources;desktop_notifier/resources" `
+              --icon "app/resource/images/logo.ico" `
+              --noconsole `
+              main.py
+          } finally {
+            Remove-Item app\common\version.py -ErrorAction SilentlyContinue
+          }
       - name: Package
         shell: pwsh
         run: |
@@ -91,9 +96,11 @@ jobs:
       - name: Install PyInstaller
         run: uv pip install pyinstaller
       - name: Build with PyInstaller
-        env:
-          ROUTER_INFO_VERSION: ${{ steps.version-linux.outputs.version }}
         run: |
+          VERSION=$(python -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d['project']['version'])")
+          echo "Building version: $VERSION"
+          echo "__version__ = \"$VERSION\"" > app/common/version.py
+          trap "rm -f app/common/version.py" EXIT
           DESKTOP_NOTIFIER_RESOURCES=$(.venv/bin/python -c \
             "import desktop_notifier; print(desktop_notifier.__path__[0])")
           .venv/bin/pyinstaller \
