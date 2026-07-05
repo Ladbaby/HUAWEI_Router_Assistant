@@ -9,7 +9,6 @@ HUAWEI Router Assistant — a PyQt5 desktop app that monitors a HUAWEI Mobile Wi
 ## Environment
 
 - **Python >= 3.12** required (enforced in `@pyproject.toml`)
-- **Windows-only** — uses Windows notification API (`notifypy`), `.ico` icons, and PowerShell build scripts
 - Package manager: **uv** (lockfile: `uv.lock`). Install deps with `uv sync`
 - Virtual environment: `.venv` (managed by uv)
 
@@ -26,7 +25,7 @@ The app connects to the router at `192.168.8.1` by default. All HTTP API calls w
 ## Code Structure
 
 - `main.py` — entry point, PyQt5 + qasync event loop setup, system tray
-- `app/common/` — core logic: `@app/common/RouterInfo.py` (router API client), `@app/common/config.py` (settings), `@app/common/database.py` (SQLite battery history), `@app/common/global_logger.py`
+- `app/common/` — core logic: `@app/common/RouterInfo.py` (router API client), `@app/common/config.py` (settings), `@app/common/database.py` (SQLite battery history), `@app/common/global_logger.py`, `@app/common/notify.py` (cross-platform notifications via desktop-notifier)
 - `app/components/` — UI card widgets for each info panel
 - `app/view/` — window and interface definitions
 - `app/config/config.json` — runtime settings (battery thresholds, language, theme)
