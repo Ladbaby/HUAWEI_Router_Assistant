@@ -10,12 +10,8 @@ on:
         type: choice
         options:
           - windows
-          - macos
           - linux
-          - windows,macos
           - windows,linux
-          - macos,linux
-          - windows,macos,linux
 
 jobs:
   generate-notes:
@@ -114,44 +110,6 @@ jobs:
           path: huawei-router-assistant-windows-x64.zip
           retention-days: 7
 
-  build-macos:
-    name: Build macOS
-    runs-on: macos-13
-    if: contains(github.event.inputs.platforms, 'macos')
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install uv
-        run: pip install uv
-      - name: Install dependencies
-        run: uv sync --frozen
-      - name: Install PyInstaller
-        run: uv pip install pyinstaller
-      - name: Build with PyInstaller
-        run: |
-          # macOS produces a .app bundle
-          pyinstaller \
-            --name HUAWEI_Router_Assistant \
-            --onefile \
-            --add-data "app/resource/images/icons/battery_over_80.ico:app/resource/images/icons/" \
-            --add-data "app/resource/images/icons/battery_below_30.ico:app/resource/images/icons/" \
-            --add-data "app/resource/images/logo.ico:app/resource/images/" \
-            --icon "app/resource/images/logo.ico" \
-            --noconsole \
-            main.py
-      - name: Package
-        run: |
-          cd dist
-          tar -czf "$GITHUB_WORKSPACE/huawei-router-assistant-macos.tar.gz" HUAWEI_Router_Assistant
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dist-macos
-          path: huawei-router-assistant-macos.tar.gz
-          retention-days: 7
-
   build-linux:
     name: Build Linux
     runs-on: ubuntu-latest
@@ -179,13 +137,15 @@ jobs:
         run: uv pip install pyinstaller
       - name: Build with PyInstaller
         run: |
-          pyinstaller \
+          DESKTOP_NOTIFIER_RESOURCES=$(.venv/bin/python -c \
+            "import desktop_notifier; print(desktop_notifier.__path__[0])")
+          .venv/bin/pyinstaller \
             --name HUAWEI_Router_Assistant \
             --onefile \
             --add-data "app/resource/images/icons/battery_over_80.ico:app/resource/images/icons/" \
             --add-data "app/resource/images/icons/battery_below_30.ico:app/resource/images/icons/" \
             --add-data "app/resource/images/logo.ico:app/resource/images/" \
-            --add-data ".venv/lib/python3.12/site-packages/desktop_notifier/resources:desktop_notifier/resources" \
+            --add-data "${DESKTOP_NOTIFIER_RESOURCES}/resources:desktop_notifier/resources" \
             --icon "app/resource/images/logo.ico" \
             --noconsole \
             main.py
@@ -204,7 +164,7 @@ jobs:
     permissions:
       contents: write
     if: github.event_name == 'workflow_dispatch'
-    needs: [generate-notes, build-windows, build-macos, build-linux]
+    needs: [generate-notes, build-windows, build-linux]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (full history)
