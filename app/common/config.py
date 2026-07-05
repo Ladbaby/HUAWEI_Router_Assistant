@@ -1,10 +1,14 @@
 # coding:utf-8
 from enum import Enum
 
+import datetime
+import pathlib
+import tomllib
+
 from PyQt5.QtCore import QLocale
 from qfluentwidgets import (qconfig, QConfig, ConfigItem, OptionsConfigItem, BoolValidator,
                             OptionsValidator, RangeConfigItem, RangeValidator,
-                            FolderListValidator, EnumSerializer, FolderValidator, ConfigSerializer, __version__)
+                            EnumSerializer, ConfigSerializer)
 
 
 class Language(Enum):
@@ -56,9 +60,17 @@ class Config(QConfig):
 
     enableLogging = ConfigItem("Developer", "enableLogging", False, BoolValidator())
 
-YEAR = 2024
+YEAR = datetime.date.today().year
 AUTHOR = "ladbaby"
-VERSION = __version__
+
+def _read_version() -> str:
+    """Read the application version from pyproject.toml."""
+    pyproject = pathlib.Path(__file__).parent.parent.parent / "pyproject.toml"
+    with open(pyproject, "rb") as f:
+        data = tomllib.load(f)
+    return data["project"]["version"]
+
+VERSION = _read_version()
 REPO_URL = "https://github.com/Ladbaby/HUAWEI_Router_Assistant"
 FEEDBACK_URL = "https://github.com/Ladbaby/HUAWEI_Router_Assistant/issues"
 RELEASE_URL = "https://github.com/Ladbaby/HUAWEI_Router_Assistant/releases/latest"
