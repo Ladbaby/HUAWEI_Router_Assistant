@@ -14,60 +14,6 @@ on:
           - windows,linux
 
 jobs:
-  generate-notes:
-    name: Generate Release Notes
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout (full history)
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Extract version from pyproject.toml
-        id: version
-        run: |
-          VERSION=$(python -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d['project']['version'])")
-          echo "version=v${VERSION}" >> $GITHUB_OUTPUT
-          echo "Extracted version: $VERSION"
-
-      - name: Find previous tag
-        id: prev
-        run: |
-          PREV=$(git tag --sort=-creatordate | grep -v "^${{ steps.version.outputs.version }}$" | head -1)
-          if [ -z "$PREV" ]; then
-            echo "No previous tag found. Using all history."
-            echo "prev=ALL" >> $GITHUB_OUTPUT
-          else
-            echo "Previous tag: $PREV"
-            echo "prev=$PREV" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Generate release notes
-        env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
-        run: |
-          if [ "${{ steps.prev.outputs.prev }}" = "ALL" ]; then
-            python .github/gen_release_notes.py -v "...${{ steps.version.outputs.version }}"
-          else
-            python .github/gen_release_notes.py \
-              -v "${{ steps.prev.outputs.prev }}...${{ steps.version.outputs.version }}"
-          fi
-          echo "---"
-          cat release.md
-
-      - name: Upload release notes
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-notes
-          path: release.md
-          retention-days: 7
-
   build-windows:
     name: Build Windows
     runs-on: windows-latest
@@ -174,8 +120,8 @@ jobs:
     name: Publish Release
     permissions:
       contents: write
-    if: ${{ always() && github.event_name == 'workflow_dispatch' && needs.generate-notes.result == 'success' && (needs.build-windows.result == 'success' || needs.build-windows.result == 'skipped') && (needs.build-linux.result == 'success' || needs.build-linux.result == 'skipped') }}
-    needs: [generate-notes, build-windows, build-linux]
+    if: ${{ always() && github.event_name == 'workflow_dispatch' && (needs.build-windows.result == 'success' || needs.build-windows.result == 'skipped') && (needs.build-linux.result == 'success' || needs.build-linux.result == 'skipped') }}
+    needs: [build-windows, build-linux]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (full history)
@@ -195,10 +141,30 @@ jobs:
           VERSION=$(python -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d['project']['version'])")
           echo "version=v${VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Download release notes
-        uses: actions/download-artifact@v4
-        with:
-          name: release-notes
+      - name: Find previous tag
+        id: prev
+        run: |
+          PREV=$(git tag --sort=-creatordate | grep -v "^${{ steps.version.outputs.version }}$" | head -1)
+          if [ -z "$PREV" ]; then
+            echo "No previous tag found. Using all history."
+            echo "prev=ALL" >> $GITHUB_OUTPUT
+          else
+            echo "Previous tag: $PREV"
+            echo "prev=$PREV" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate release notes
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          if [ "${{ steps.prev.outputs.prev }}" = "ALL" ]; then
+            python .github/gen_release_notes.py -v "...${{ steps.version.outputs.version }}"
+          else
+            python .github/gen_release_notes.py \
+              -v "${{ steps.prev.outputs.prev }}...${{ steps.version.outputs.version }}"
+          fi
+          echo "---"
+          cat release.md
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -236,4 +202,4 @@ jobs:
           tag_name: ${{ steps.version.outputs.version }}
           files: |
             dist/*
-          body_path: release-notes/release.md
+          body_path: release.md
